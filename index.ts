@@ -1,11 +1,11 @@
-import { prefab, Prefab, PrefabBootstrap } from "./src/prefab";
+import { reforge, Reforge, ReforgeBootstrap } from "./src/reforge";
 import { Config } from "./src/config";
 import Context from "./src/context";
 import version from "./src/version";
 
-export { prefab, Prefab, Config, Context, version };
+export { reforge, Reforge, Config, Context, version };
 
-export { PrefabBootstrap };
+export { ReforgeBootstrap };
 
 export type { Duration } from "./src/configValue";
 export type { default as ConfigValue } from "./src/configValue";

@@ -1,5 +1,5 @@
 import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
-import { Prefab, Config, Context, type PrefabBootstrap } from "../index";
+import { Reforge, Config, Context, type ReforgeBootstrap } from "../index";
 import { Contexts } from "./context";
 import { type EvaluationPayload } from "./config";
 import { DEFAULT_TIMEOUT } from "./apiHelpers";
@@ -8,9 +8,9 @@ import version from "./version";
 
 enableFetchMocks();
 
-let prefab = new Prefab();
+let reforge = new Reforge();
 
-type InitParams = Parameters<typeof prefab.init>[0];
+type InitParams = Parameters<typeof reforge.init>[0];
 
 const defaultTestContext: Contexts = { user: { device: "desktop", key: "abcdefg" } };
 
@@ -21,12 +21,12 @@ const defaultTestInitParams: InitParams = {
 };
 
 beforeEach(() => {
-  prefab = new Prefab();
+  reforge = new Reforge();
 });
 
 afterEach(() => {
-  prefab.stopPolling();
-  prefab.stopTelemetry();
+  reforge.stopPolling();
+  reforge.stopTelemetry();
 });
 
 describe("init", () => {
@@ -34,29 +34,29 @@ describe("init", () => {
     const data = { evaluations: { turbo: { value: { double: 2.5 } } } };
     fetchMock.mockResponse(JSON.stringify(data));
 
-    expect(prefab.loaded).toBe(false);
+    expect(reforge.loaded).toBe(false);
 
-    await prefab.init(defaultTestInitParams);
+    await reforge.init(defaultTestInitParams);
 
-    expect(prefab.configs).toEqual({
+    expect(reforge.configs).toEqual({
       turbo: new Config("turbo", 2.5, "double", { double: 2.5 }),
     });
-    expect(prefab.loaded).toBe(true);
+    expect(reforge.loaded).toBe(true);
   });
 
   it("returns falsy responses for flag checks if it cannot load config", async () => {
     fetchMock.mockReject(new Error("Network error"));
 
-    expect(prefab.loaded).toBe(false);
+    expect(reforge.loaded).toBe(false);
 
-    prefab.init(defaultTestInitParams).catch((reason: any) => {
+    reforge.init(defaultTestInitParams).catch((reason: any) => {
       expect(reason.message).toEqual("Network error");
-      expect(prefab.configs).toEqual({});
+      expect(reforge.configs).toEqual({});
 
-      expect(prefab.isEnabled("foo")).toBe(false);
+      expect(reforge.isEnabled("foo")).toBe(false);
     });
 
-    expect(prefab.loaded).toBe(false);
+    expect(reforge.loaded).toBe(false);
   });
 
   it("allows passing a timeout down to the loader", async () => {
@@ -64,24 +64,24 @@ describe("init", () => {
     fetchMock.mockResponse(JSON.stringify(data));
 
     const config: InitParams = { ...defaultTestInitParams };
-    expect(prefab.loaded).toBe(false);
+    expect(reforge.loaded).toBe(false);
 
-    await prefab.init(config);
-    expect(prefab.loader?.timeout).toEqual(DEFAULT_TIMEOUT);
+    await reforge.init(config);
+    expect(reforge.loader?.timeout).toEqual(DEFAULT_TIMEOUT);
 
     const NEW_TIMEOUT = 123;
     config.timeout = NEW_TIMEOUT;
 
-    await prefab.init(config);
-    expect(prefab.loader?.timeout).toEqual(NEW_TIMEOUT);
+    await reforge.init(config);
+    expect(reforge.loader?.timeout).toEqual(NEW_TIMEOUT);
   });
 
   it("sends the client version", async () => {
     let headersAsserted = false;
 
     fetchMock.mockResponse(async (req) => {
-      expect(req.headers.get("X-PrefabCloud-Client-Version")).toStrictEqual(
-        `prefab-cloud-js-${version}`
+      expect(req.headers.get("X-Reforge-Client-Version")).toStrictEqual(
+        `sdk-javascript-${version}`
       );
       headersAsserted = true;
 
@@ -91,9 +91,9 @@ describe("init", () => {
       };
     });
 
-    expect(prefab.loaded).toBe(false);
+    expect(reforge.loaded).toBe(false);
 
-    await prefab.init(defaultTestInitParams);
+    await reforge.init(defaultTestInitParams);
     expect(headersAsserted).toBe(true);
   });
 
@@ -103,22 +103,22 @@ describe("init", () => {
       context: new Context({ user: { device: "desktop" } }),
     };
 
-    await prefab.init(params);
-    expect(prefab.isCollectingEvaluationSummaries()).toBe(true);
+    await reforge.init(params);
+    expect(reforge.isCollectingEvaluationSummaries()).toBe(true);
 
     params.collectEvaluationSummaries = false;
 
-    await prefab.init(params);
-    expect(prefab.isCollectingEvaluationSummaries()).toBe(false);
+    await reforge.init(params);
+    expect(reforge.isCollectingEvaluationSummaries()).toBe(false);
   });
 
   it("can override the client name and version", async () => {
-    const nameOverride = "prefab-cloud-react";
+    const nameOverride = "sdk-react";
     const versionOverride = "0.11.9";
     let headersAsserted = false;
 
     fetchMock.mockResponse(async (req) => {
-      expect(req.headers.get("X-PrefabCloud-Client-Version")).toStrictEqual(
+      expect(req.headers.get("X-Reforge-Client-Version")).toStrictEqual(
         `${nameOverride}-${versionOverride}`
       );
       headersAsserted = true;
@@ -134,9 +134,9 @@ describe("init", () => {
       clientNameString: nameOverride,
       clientVersionString: versionOverride,
     };
-    expect(prefab.loaded).toBe(false);
+    expect(reforge.loaded).toBe(false);
 
-    await prefab.init(params);
+    await reforge.init(params);
     expect(headersAsserted).toBe(true);
   });
 });
@@ -147,38 +147,38 @@ describe("poll", () => {
     const frequencyInMs = 25;
     fetchMock.mockResponse(JSON.stringify(data));
 
-    await prefab.init(defaultTestInitParams);
+    await reforge.init(defaultTestInitParams);
 
-    if (!prefab.loader) {
+    if (!reforge.loader) {
       throw new Error("Expected loader to be set");
     }
 
-    await prefab.poll({ frequencyInMs });
-    expect(prefab.loader.context).toStrictEqual(prefab.context);
+    await reforge.poll({ frequencyInMs });
+    expect(reforge.loader.context).toStrictEqual(reforge.context);
 
-    if (prefab.pollStatus.status !== "running") {
+    if (reforge.pollStatus.status !== "running") {
       throw new Error("Expected pollStatus to be running");
     }
-    expect(prefab.pollCount).toEqual(0);
-    expect(prefab.loader.context).toStrictEqual(prefab.context);
+    expect(reforge.pollCount).toEqual(0);
+    expect(reforge.loader.context).toStrictEqual(reforge.context);
 
     await wait(frequencyInMs);
-    expect(prefab.pollCount).toEqual(1);
-    expect(prefab.loader.context).toStrictEqual(prefab.context);
+    expect(reforge.pollCount).toEqual(1);
+    expect(reforge.loader.context).toStrictEqual(reforge.context);
 
     // changing the context should set the context for the loader as well
     const newContext = new Context({ abc: { def: "ghi" } });
-    prefab.updateContext(newContext, true);
+    reforge.updateContext(newContext, true);
 
     await wait(frequencyInMs);
-    expect(prefab.pollCount).toEqual(2);
-    expect(prefab.loader.context).toStrictEqual(newContext);
+    expect(reforge.pollCount).toEqual(2);
+    expect(reforge.loader.context).toStrictEqual(newContext);
 
-    prefab.stopPolling();
+    reforge.stopPolling();
 
     // Polling does not continue after stopPolling is called
     await wait(frequencyInMs * 2);
-    expect(prefab.pollCount).toEqual(2);
+    expect(reforge.pollCount).toEqual(2);
   });
 
   it("is reset when you call poll() again", async () => {
@@ -188,51 +188,51 @@ describe("poll", () => {
     const frequencyInMs = 25;
     fetchMock.mockResponse(JSON.stringify(data));
 
-    await prefab.init(defaultTestInitParams);
+    await reforge.init(defaultTestInitParams);
 
-    if (!prefab.loader) {
+    if (!reforge.loader) {
       throw new Error("Expected loader to be set");
     }
 
-    await prefab.poll({ frequencyInMs });
-    expect(prefab.loader.context).toStrictEqual(prefab.context);
+    await reforge.poll({ frequencyInMs });
+    expect(reforge.loader.context).toStrictEqual(reforge.context);
 
-    if (prefab.pollStatus.status !== "running") {
+    if (reforge.pollStatus.status !== "running") {
       throw new Error("Expected pollStatus to be running");
     }
-    expect(prefab.pollCount).toEqual(0);
-    expect(prefab.loader.context).toStrictEqual(prefab.context);
+    expect(reforge.pollCount).toEqual(0);
+    expect(reforge.loader.context).toStrictEqual(reforge.context);
 
-    const timeoutId = prefab.pollTimeoutId;
+    const timeoutId = reforge.pollTimeoutId;
 
-    prefab.poll({ frequencyInMs });
+    reforge.poll({ frequencyInMs });
     expect(clearTimeout).toHaveBeenCalledWith(timeoutId);
-    expect(prefab.pollTimeoutId).toBeUndefined();
+    expect(reforge.pollTimeoutId).toBeUndefined();
   });
 });
 
 describe("setConfig", () => {
   it("works when types are not provided", () => {
-    expect(prefab.configs).toEqual({});
+    expect(reforge.configs).toEqual({});
 
-    prefab.setConfig({
+    reforge.setConfig({
       turbo: 2.5,
       foo: true,
       jsonExample: { foo: "bar", baz: 123 },
       durationExample: { ms: 1884 * 1000, seconds: 1884 },
     });
 
-    expect(prefab.configs).toEqual({
+    expect(reforge.configs).toEqual({
       turbo: new Config("turbo", 2.5, "number"),
       foo: new Config("foo", true, "boolean"),
       jsonExample: new Config("jsonExample", { foo: "bar", baz: 123 }, "object"),
       durationExample: new Config("durationExample", { ms: 1884000, seconds: 1884 }, "object"),
     });
 
-    expect(prefab.isEnabled("foo")).toBe(true);
-    expect(prefab.get("turbo")).toEqual(2.5);
-    expect(prefab.get("jsonExample")).toStrictEqual({ foo: "bar", baz: 123 });
-    expect(prefab.getDuration("durationExample")).toStrictEqual({
+    expect(reforge.isEnabled("foo")).toBe(true);
+    expect(reforge.get("turbo")).toEqual(2.5);
+    expect(reforge.get("jsonExample")).toStrictEqual({ foo: "bar", baz: 123 });
+    expect(reforge.getDuration("durationExample")).toStrictEqual({
       ms: 1884 * 1000,
       seconds: 1884,
     });
@@ -241,51 +241,51 @@ describe("setConfig", () => {
 
 describe("bootstrapping", () => {
   it("skips the http request if the context is unchanged", async () => {
-    expect(prefab.loaded).toBe(false);
+    expect(reforge.loaded).toBe(false);
 
     /* eslint-disable no-underscore-dangle */
-    (globalThis as any)._prefabBootstrap = {
+    (globalThis as any)._reforgeBootstrap = {
       // This is defaultTestContext but with re-ordered keys
       context: { user: { key: "abcdefg", device: "desktop" } },
       evaluations: {
         turbo: { value: { double: 99.5 } },
       } as unknown as EvaluationPayload,
-    } as PrefabBootstrap;
+    } as ReforgeBootstrap;
 
-    await prefab.init(defaultTestInitParams);
+    await reforge.init(defaultTestInitParams);
 
-    expect(prefab.configs).toEqual({
+    expect(reforge.configs).toEqual({
       turbo: new Config("turbo", 99.5, "double", { double: 99.5 }),
     });
-    expect(prefab.get("turbo")).toEqual(99.5);
-    expect(prefab.loaded).toBe(true);
+    expect(reforge.get("turbo")).toEqual(99.5);
+    expect(reforge.loaded).toBe(true);
   });
 
   it("does not skip the http request if the context is different", async () => {
     const data = { evaluations: { turbo: { value: { double: 2.5 } } } };
     fetchMock.mockResponse(JSON.stringify(data));
 
-    expect(prefab.loaded).toBe(false);
+    expect(reforge.loaded).toBe(false);
 
     /* eslint-disable no-underscore-dangle */
-    (globalThis as any)._prefabBootstrap = {
+    (globalThis as any)._reforgeBootstrap = {
       context: { user: { ...defaultTestContext.user, key: "1324" } },
       evaluations: {
         turbo: { value: { double: 99.5 } },
       } as unknown as EvaluationPayload,
-    } as PrefabBootstrap;
+    } as ReforgeBootstrap;
 
-    await prefab.init(defaultTestInitParams);
+    await reforge.init(defaultTestInitParams);
 
-    expect(prefab.configs).toEqual({
+    expect(reforge.configs).toEqual({
       turbo: new Config("turbo", 2.5, "double", { double: 2.5 }),
     });
-    expect(prefab.loaded).toBe(true);
+    expect(reforge.loaded).toBe(true);
   });
 });
 
 test("get", () => {
-  prefab.setConfig({
+  reforge.setConfig({
     evaluations: {
       turbo: { value: { double: 2.5 } },
       durationExample: { value: { duration: { millis: 1884000, definition: "PT1884S" } } },
@@ -293,22 +293,22 @@ test("get", () => {
     },
   });
 
-  expect(prefab.get("turbo")).toEqual(2.5);
+  expect(reforge.get("turbo")).toEqual(2.5);
 
-  expect(prefab.get("jsonExample")).toStrictEqual({ foo: "bar", baz: 123 });
+  expect(reforge.get("jsonExample")).toStrictEqual({ foo: "bar", baz: 123 });
 
   // You _can_ use `get` for durations but you probably want `getDuration` to save yourself some `as` casting
-  expect(prefab.get("durationExample")).toStrictEqual({
+  expect(reforge.get("durationExample")).toStrictEqual({
     ms: 1884 * 1000,
     seconds: 1884,
   });
   // e.g.
-  // expect((prefab.get("durationExample") as Duration).seconds).toEqual(1884);
-  // expect((prefab.get("durationExample") as Duration).ms).toEqual(1884 * 1000);
+  // expect((reforge.get("durationExample") as Duration).seconds).toEqual(1884);
+  // expect((reforge.get("durationExample") as Duration).ms).toEqual(1884 * 1000);
 });
 
 test("getDuration", () => {
-  prefab.setConfig({
+  reforge.setConfig({
     evaluations: {
       turbo: { value: { double: 2.5 } },
       durationExample: {
@@ -318,28 +318,28 @@ test("getDuration", () => {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  expect(prefab.getDuration("durationExample")!.seconds).toEqual(1884);
+  expect(reforge.getDuration("durationExample")!.seconds).toEqual(1884);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  expect(prefab.getDuration("durationExample")!.ms).toEqual(1884 * 1000);
+  expect(reforge.getDuration("durationExample")!.ms).toEqual(1884 * 1000);
 
   expect(() => {
-    prefab.getDuration("turbo");
+    reforge.getDuration("turbo");
   }).toThrowError('Value for key "turbo" is not a duration');
 });
 
 test("isEnabled", () => {
   // it is false when no config is loaded
-  expect(prefab.isEnabled("foo")).toBe(false);
+  expect(reforge.isEnabled("foo")).toBe(false);
 
-  prefab.setConfig({ foo: true });
+  reforge.setConfig({ foo: true });
 
-  expect(prefab.isEnabled("foo")).toBe(true);
+  expect(reforge.isEnabled("foo")).toBe(true);
 });
 
 describe("shouldLog", () => {
   test("compares against the default level where there is no value", () => {
     expect(
-      prefab.shouldLog({
+      reforge.shouldLog({
         loggerName: "example",
         desiredLevel: "INFO",
         defaultLevel: "INFO",
@@ -347,7 +347,7 @@ describe("shouldLog", () => {
     ).toBe(true);
 
     expect(
-      prefab.shouldLog({
+      reforge.shouldLog({
         loggerName: "example",
         desiredLevel: "DEBUG",
         defaultLevel: "INFO",
@@ -356,12 +356,12 @@ describe("shouldLog", () => {
   });
 
   test("compares against the value when present", () => {
-    prefab.setConfig({
+    reforge.setConfig({
       "log-level.example": "INFO",
     });
 
     expect(
-      prefab.shouldLog({
+      reforge.shouldLog({
         loggerName: "example",
         desiredLevel: "INFO",
         defaultLevel: "ERROR",
@@ -369,7 +369,7 @@ describe("shouldLog", () => {
     ).toBe(true);
 
     expect(
-      prefab.shouldLog({
+      reforge.shouldLog({
         loggerName: "example",
         desiredLevel: "DEBUG",
         defaultLevel: "ERROR",
@@ -380,14 +380,14 @@ describe("shouldLog", () => {
   test("traverses the hierarchy to get the closest level for the loggerName", () => {
     const loggerName = "some.test.name.with.more.levels";
 
-    prefab.setConfig({
+    reforge.setConfig({
       "log-level.some.test.name": "TRACE",
       "log-level.some.test": "DEBUG",
       "log-level.irrelevant": "ERROR",
     });
 
     expect(
-      prefab.shouldLog({
+      reforge.shouldLog({
         loggerName,
         desiredLevel: "TRACE",
         defaultLevel: "ERROR",
@@ -395,7 +395,7 @@ describe("shouldLog", () => {
     ).toEqual(true);
 
     expect(
-      prefab.shouldLog({
+      reforge.shouldLog({
         loggerName: "some.test",
         desiredLevel: "TRACE",
         defaultLevel: "ERROR",
@@ -403,7 +403,7 @@ describe("shouldLog", () => {
     ).toEqual(false);
 
     expect(
-      prefab.shouldLog({
+      reforge.shouldLog({
         loggerName: "some.test",
         desiredLevel: "DEBUG",
         defaultLevel: "ERROR",
@@ -411,7 +411,7 @@ describe("shouldLog", () => {
     ).toEqual(true);
 
     expect(
-      prefab.shouldLog({
+      reforge.shouldLog({
         loggerName: "some.test",
         desiredLevel: "INFO",
         defaultLevel: "ERROR",
@@ -420,12 +420,12 @@ describe("shouldLog", () => {
   });
 
   it("can use the root log level setting if nothing is found in the hierarchy", () => {
-    prefab.setConfig({
+    reforge.setConfig({
       "log-level": "INFO",
     });
 
     expect(
-      prefab.shouldLog({
+      reforge.shouldLog({
         loggerName: "some.test",
         desiredLevel: "INFO",
         defaultLevel: "ERROR",
@@ -433,7 +433,7 @@ describe("shouldLog", () => {
     ).toEqual(true);
 
     expect(
-      prefab.shouldLog({
+      reforge.shouldLog({
         loggerName: "some.test",
         desiredLevel: "DEBUG",
         defaultLevel: "ERROR",
@@ -457,14 +457,14 @@ describe("updateContext", () => {
 
     const initialContext = new Context(defaultTestContext);
 
-    await prefab.init(defaultTestInitParams);
+    await reforge.init(defaultTestInitParams);
 
-    if (!prefab.loader) {
+    if (!reforge.loader) {
       throw new Error("Expected loader to be set");
     }
 
-    expect(prefab.loader.context).toStrictEqual(initialContext);
-    expect(prefab.context).toStrictEqual(initialContext);
+    expect(reforge.loader.context).toStrictEqual(initialContext);
+    expect(reforge.context).toStrictEqual(initialContext);
 
     if (invokedUrl === undefined) {
       throw new Error("Expected invokedUrl to be set");
@@ -476,10 +476,10 @@ describe("updateContext", () => {
 
     const newContext = new Context({ user: { device: "mobile" } });
 
-    await prefab.updateContext(newContext);
+    await reforge.updateContext(newContext);
 
-    expect(prefab.loader.context).toStrictEqual(newContext);
-    expect(prefab.context).toStrictEqual(newContext);
+    expect(reforge.loader.context).toStrictEqual(newContext);
+    expect(reforge.context).toStrictEqual(newContext);
 
     expect(invokedUrl).toStrictEqual(
       `https://belt.prefab.cloud/api/v2/configs/eval-with-context/${newContext.encode()}?collectContextMode=PERIODIC_EXAMPLE`

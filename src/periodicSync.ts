@@ -1,5 +1,5 @@
 import { ExponentialBackoff } from "./exponentialBackoff";
-import { type prefab } from "./prefab";
+import { type reforge } from "./reforge";
 
 abstract class PeriodicSync<T> {
   protected data: Map<string, T> = new Map();
@@ -8,13 +8,13 @@ abstract class PeriodicSync<T> {
 
   private syncInterval: any;
 
-  protected client: typeof prefab;
+  protected client: typeof reforge;
 
   private name: string;
 
   private timeoutID: ReturnType<typeof setTimeout> | undefined;
 
-  constructor(client: typeof prefab, name: string, syncInterval?: number) {
+  constructor(client: typeof reforge, name: string, syncInterval?: number) {
     this.client = client;
     this.name = name;
 
@@ -72,7 +72,7 @@ abstract class PeriodicSync<T> {
   }
 
   protected logInternal(message: string): void {
-    const loggerName = `${this.client.clientNameString}.prefab.${this.name}`;
+    const loggerName = `${this.client.clientNameString}.reforge.${this.name}`;
 
     if (
       this.client.shouldLog(

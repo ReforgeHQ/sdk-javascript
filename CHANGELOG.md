@@ -110,7 +110,7 @@
 
 ## 0.1.11 - 2023-07-03
 
-- Support polling via `prefab.poll({frequencyInMs})` (#16)
+- Support polling via `reforge.poll({frequencyInMs})` (#16)
 
 ## 0.1.10 - 2023-06-27
 

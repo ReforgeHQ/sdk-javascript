@@ -105,10 +105,7 @@ describe("load", () => {
         requestUrl = new URL(req.url);
 
         requestHeaders.set("Authorization", req.headers.get("Authorization"));
-        requestHeaders.set(
-          "X-PrefabCloud-Client-Version",
-          req.headers.get("X-PrefabCloud-Client-Version")
-        );
+        requestHeaders.set("X-Reforge-Client-Version", req.headers.get("X-Reforge-Client-Version"));
 
         return {
           status: 200,
@@ -116,7 +113,7 @@ describe("load", () => {
         };
       });
 
-      loader = new Loader({ context, apiKey, clientVersion: `prefab-cloud-js-${version}` });
+      loader = new Loader({ context, apiKey, clientVersion: `sdk-javascript-${version}` });
 
       const results = await loader.load();
       expect(results).toStrictEqual(data);
@@ -133,8 +130,8 @@ describe("load", () => {
       );
 
       expect(requestHeaders.get("Authorization")).toStrictEqual("Basic dTphcGlLZXk=");
-      expect(requestHeaders.get("X-PrefabCloud-Client-Version")).toStrictEqual(
-        `prefab-cloud-js-${version}`
+      expect(requestHeaders.get("X-Reforge-Client-Version")).toStrictEqual(
+        `sdk-javascript-${version}`
       );
     });
 

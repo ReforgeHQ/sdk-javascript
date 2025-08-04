@@ -12,7 +12,7 @@ import version from "./version";
 
 type EvaluationCallback = (key: string, value: ConfigValue, context: Context | undefined) => void;
 
-export interface PrefabBootstrap {
+export interface ReforgeBootstrap {
   evaluations: EvaluationPayload;
   context: Contexts;
 }
@@ -37,7 +37,7 @@ type PollStatus =
   | { status: "stopped" }
   | { status: "running"; frequencyInMs: number };
 
-export class Prefab {
+export class Reforge {
   private _configs: { [key: string]: Config } = {};
 
   private _telemetryUploader: TelemetryUploader | undefined;
@@ -58,7 +58,7 @@ export class Prefab {
 
   private loggerAggregator: LoggerAggregator | undefined;
 
-  public clientNameString = "prefab-cloud-js";
+  public clientNameString = "sdk-javascript";
 
   public loaded = false;
 
@@ -78,7 +78,7 @@ export class Prefab {
     collectEvaluationSummaries = true,
     collectLoggerNames = false,
     collectContextMode = "PERIODIC_EXAMPLE",
-    clientNameString = "prefab-cloud-js",
+    clientNameString = "sdk-javascript",
     clientVersionString = version,
   }: InitParams) {
     const context = providedContext ?? this.context;
@@ -164,17 +164,17 @@ export class Prefab {
 
   private async load() {
     if (!this.loader || !this.context) {
-      throw new Error("Prefab not initialized. Call init() first.");
+      throw new Error("Reforge not initialized. Call init() first.");
     }
 
     /* eslint-disable no-underscore-dangle */
-    if (globalThis && (globalThis as any)._prefabBootstrap) {
+    if (globalThis && (globalThis as any)._reforgeBootstrap) {
       /* eslint-disable no-underscore-dangle */
-      const prefabBootstrap = (globalThis as any)._prefabBootstrap as PrefabBootstrap;
-      const bootstrapContext = new Context(prefabBootstrap.context);
+      const reforgeBootstrap = (globalThis as any)._reforgeBootstrap as ReforgeBootstrap;
+      const bootstrapContext = new Context(reforgeBootstrap.context);
 
       if (this.context.equals(bootstrapContext)) {
-        this.setConfig({ evaluations: prefabBootstrap.evaluations });
+        this.setConfig({ evaluations: reforgeBootstrap.evaluations });
         return Promise.resolve();
       }
     }
@@ -196,7 +196,7 @@ export class Prefab {
 
   async updateContext(context: Context, skipLoad = false) {
     if (!this.loader) {
-      throw new Error("Prefab not initialized. Call init() first.");
+      throw new Error("Reforge not initialized. Call init() first.");
     }
 
     this._context = context;
@@ -210,7 +210,7 @@ export class Prefab {
 
   async poll({ frequencyInMs }: { frequencyInMs: number }) {
     if (!this.loader) {
-      throw new Error("Prefab not initialized. Call init() first.");
+      throw new Error("Reforge not initialized. Call init() first.");
     }
 
     this.stopPolling();
@@ -267,7 +267,7 @@ export class Prefab {
       if (!key.startsWith(loggerPrefix)) {
         // eslint-disable-next-line no-console
         console.warn(
-          `Prefab warning: The client has not finished loading data yet. Unable to look up actual value for key "${key}".`
+          `Reforge warning: The client has not finished loading data yet. Unable to look up actual value for key "${key}".`
         );
       }
 
@@ -329,4 +329,4 @@ export class Prefab {
   }
 }
 
-export const prefab = new Prefab();
+export const reforge = new Reforge();

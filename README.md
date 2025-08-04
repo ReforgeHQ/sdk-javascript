@@ -1,20 +1,20 @@
-# prefab-cloud-js
+# @reforge-com/sdk-javascript
 
-A client for [Prefab]
+A client for [Reforge]
 
 ## Installation
 
-`npm install @prefab-cloud/prefab-cloud-js` or `yarn add @prefab-cloud/prefab-cloud-js`
+`npm install @reforge-com/sdk-javascript` or `yarn add @reforge-com/sdk-javascript`
 
 If you'd prefer to use the standalone `<script>` tag approach, we recommend using
 [jsDelivr][jsDelivr] for a minified/bundled version.
 
 ## Usage in your app
 
-Initialize prefab with your api key and a `Context` for the current user/visitor/device/request:
+Initialize reforge with your api key and a `Context` for the current user/visitor/device/request:
 
 ```javascript
-import { prefab, Context } from "@prefab-cloud/prefab-cloud-js";
+import { reforge, Context } from "@reforge-com/sdk-javascript";
 
 const options = {
   apiKey: "1234",
@@ -25,18 +25,18 @@ const options = {
     device: { mobile: true },
   }),
 };
-await prefab.init(options);
+await reforge.init(options);
 ```
 
 <details>
 <summary>Initialization with Context with the <code>&lt;script&gt; tag</code></summary>
 
 ```javascript
-// `prefab` is available globally on the window object
-// `Context` is available globally as `window.prefabNamespace.Context`
+// `reforge` is available globally on the window object
+// `Context` is available globally as `window.reforgeNamespace.Context`
 const options = {
   apiKey: "1234",
-  context: new prefabNamespace.Context({
+  context: new reforgeNamespace.Context({
     user: {
       email: "test@example.com",
     },
@@ -44,40 +44,40 @@ const options = {
   }),
 };
 
-prefab.init(options).then(() => {
+reforge.init(options).then(() => {
   console.log(options);
-  console.log("test-flag is " + prefab.get("test-flag"));
+  console.log("test-flag is " + reforge.get("test-flag"));
 
-  console.log("ex1-copywrite " + prefab.get("ex1-copywrite"));
-  $(".copywrite").text(prefab.get("ex1-copywrite"));
+  console.log("ex1-copywrite " + reforge.get("ex1-copywrite"));
+  $(".copywrite").text(reforge.get("ex1-copywrite"));
 });
 ```
 
 </details>
 
-Now you can use `prefab`'s config and feature flag evaluation, e.g.
+Now you can use `reforge`'s config and feature flag evaluation, e.g.
 
 ```javascript
-if (prefab.isEnabled('cool-feature') {
+if (reforge.isEnabled('cool-feature') {
   // ...
 }
 
-setTimeout(ping, prefab.get('ping-delay'));
+setTimeout(ping, reforge.get('ping-delay'));
 ```
 
 Here's an explanation of each property
 
-| property        | example                              | purpose                                                                                      |
-| --------------- | ------------------------------------ | -------------------------------------------------------------------------------------------- |
-| `isEnabled`     | `prefab.isEnabled("new-logo")`       | returns a boolean (default `false`) if a feature is enabled based on the current context     |
-| `get`           | `prefab.get('retry-count')`          | returns the value of a flag or config evaluated in the current context                       |
-| `getDuration`   | `prefab.getDuration('http.timeout')` | returns a duration object `{seconds: number, ms: number}`                                    |
-| `loaded`        | `if (prefab.loaded) { ... }`         | a boolean indicating whether prefab content has loaded                                       |
-| `shouldLog`     | `if (prefab.shouldLog(...)) {`       | returns a boolean indicating whether the proposed log level is valid for the current context |
-| `poll`          | `prefab.poll({frequencyInMs})`       | starts polling every `frequencyInMs` ms.                                                     |
-| `stopPolling`   | `prefab.stopPolling()`               | stops the polling process                                                                    |
-| `context`       | `prefab.context`                     | get the current context (after `init()`).                                                    |
-| `updateContext` | `prefab.updateContext(newContext)`   | update the context and refetch. Pass `false` as a second argument to skip refetching         |
+| property        | example                               | purpose                                                                                      |
+| --------------- | ------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `isEnabled`     | `reforge.isEnabled("new-logo")`       | returns a boolean (default `false`) if a feature is enabled based on the current context     |
+| `get`           | `reforge.get('retry-count')`          | returns the value of a flag or config evaluated in the current context                       |
+| `getDuration`   | `reforge.getDuration('http.timeout')` | returns a duration object `{seconds: number, ms: number}`                                    |
+| `loaded`        | `if (reforge.loaded) { ... }`         | a boolean indicating whether reforge content has loaded                                      |
+| `shouldLog`     | `if (reforge.shouldLog(...)) {`       | returns a boolean indicating whether the proposed log level is valid for the current context |
+| `poll`          | `reforge.poll({frequencyInMs})`       | starts polling every `frequencyInMs` ms.                                                     |
+| `stopPolling`   | `reforge.stopPolling()`               | stops the polling process                                                                    |
+| `context`       | `reforge.context`                     | get the current context (after `init()`).                                                    |
+| `updateContext` | `reforge.updateContext(newContext)`   | update the context and refetch. Pass `false` as a second argument to skip refetching         |
 
 ## `shouldLog()`
 
@@ -110,35 +110,35 @@ if (shouldLog({ loggerName, desiredLevel, defaultLevel })) {
 }
 ```
 
-If no log level value is configured in Prefab for "my.corp.widgets.modal" or higher in the
+If no log level value is configured in Reforge for "my.corp.widgets.modal" or higher in the
 hierarchy, then the `console.info` will not happen. If the value is configured and is INFO or more
 verbose, the `console.info` will happen.
 
 ## `poll()`
 
-After `prefab.init()`, you can start polling. Polling uses the context you defined in `init` by
-default. You can update the context for future polling by setting it on the `prefab` object.
+After `reforge.init()`, you can start polling. Polling uses the context you defined in `init` by
+default. You can update the context for future polling by setting it on the `reforge` object.
 
 ```javascript
 // some time after init
-prefab.poll({frequencyInMs: 300000})
+reforge.poll({frequencyInMs: 300000})
 
 // we're now polling with the context used from `init`
 
 // later, perhaps after a visitor logs in and now you have the context of their current user
-prefab.context = new Context({...prefab.context, user: { email: user.email, key: user.trackingId })
+reforge.context = new Context({...reforge.context, user: { email: user.email, key: user.trackingId })
 
 // future polling will use the new context
 ```
 
 ## Usage in your test suite
 
-In your test suite, you probably want to skip the `prefab.init` altogether and instead use
-`prefab.setConfig` to set up your test state.
+In your test suite, you probably want to skip the `reforge.init` altogether and instead use
+`reforge.setConfig` to set up your test state.
 
 ```javascript
 it("shows the turbo button when the feature is enabled", () => {
-  prefab.setConfig({
+  reforge.setConfig({
     turbo: true,
     defaultMediaCount: 3,
   });
@@ -150,8 +150,8 @@ it("shows the turbo button when the feature is enabled", () => {
 });
 ```
 
-[Prefab]: https://www.prefab.cloud/
-[jsDelivr]: https://www.jsdelivr.com/package/npm/@prefab-cloud/prefab-cloud-js
+[Reforge]: https://www.prefab.cloud/
+[jsDelivr]: https://www.jsdelivr.com/package/npm/@reforge-com/sdk-javascript
 
 ## Release Scripts
 
@@ -192,5 +192,5 @@ This script:
 To install the pre-release version:
 
 ```bash
-npm install @prefab-cloud/prefab-cloud-js@pre
+npm install @reforge-com/sdk-javascript@pre
 ```

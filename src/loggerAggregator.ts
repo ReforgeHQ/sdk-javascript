@@ -4,7 +4,7 @@
 
 import { Severity } from "./logger";
 import { PeriodicSync } from "./periodicSync";
-import { type prefab } from "./prefab";
+import { type reforge } from "./reforge";
 
 type LoggerCounter = {
   loggerName: string;
@@ -43,7 +43,7 @@ const SEVERITY_KEY: { [key in Severity]: keyof LoggerCounter } = {
 class LoggerAggregator extends PeriodicSync<LoggerCounter> {
   private maxLoggers: number;
 
-  constructor(client: typeof prefab, maxLoggers: number, syncInterval?: number) {
+  constructor(client: typeof reforge, maxLoggers: number, syncInterval?: number) {
     super(client, "LoggerAggregator", syncInterval ?? 30000);
 
     this.maxLoggers = maxLoggers;

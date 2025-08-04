@@ -1,16 +1,16 @@
 // This is in its own file for jest concurrency isolation purposes
 
-import { Prefab, Context } from "../index";
+import { Reforge, Context } from "../index";
 
 const exampleContext = new Context({
   user: { firstName: "Fred", lastName: "Jones", id: 10001 },
   team: { name: "Sales", isCostCenter: false },
 });
 
-const setContext = async (prefab: Prefab, contexts: Context) => {
+const setContext = async (reforge: Reforge, contexts: Context) => {
   // eslint-disable-next-line no-param-reassign
-  prefab.loader = {} as unknown as Prefab["loader"];
-  await prefab.updateContext(contexts, true);
+  reforge.loader = {} as unknown as Reforge["loader"];
+  await reforge.updateContext(contexts, true);
 };
 
 const waitForAsyncCall = async () => {
@@ -22,14 +22,14 @@ describe("afterEvaluationCallback", () => {
   test("get with no Context", async () => {
     const callback = jest.fn();
 
-    const prefab = new Prefab();
-    prefab.afterEvaluationCallback = callback;
+    const reforge = new Reforge();
+    reforge.afterEvaluationCallback = callback;
 
-    prefab.setConfig({ turbo: 2.5 });
+    reforge.setConfig({ turbo: 2.5 });
 
     expect(callback).not.toHaveBeenCalled();
 
-    prefab.get("turbo");
+    reforge.get("turbo");
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -41,16 +41,16 @@ describe("afterEvaluationCallback", () => {
   test("get with context", async () => {
     const callback = jest.fn();
 
-    const prefab = new Prefab();
-    setContext(prefab, exampleContext);
+    const reforge = new Reforge();
+    setContext(reforge, exampleContext);
 
-    prefab.afterEvaluationCallback = callback;
+    reforge.afterEvaluationCallback = callback;
 
-    prefab.setConfig({ turbo: 2.5 });
+    reforge.setConfig({ turbo: 2.5 });
 
     expect(callback).not.toHaveBeenCalled();
 
-    prefab.get("turbo");
+    reforge.get("turbo");
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -62,19 +62,19 @@ describe("afterEvaluationCallback", () => {
   test("isEnabled with no Context", async () => {
     const callback = jest.fn();
 
-    const prefab = new Prefab();
-    prefab.afterEvaluationCallback = callback;
+    const reforge = new Reforge();
+    reforge.afterEvaluationCallback = callback;
 
     // it is false when no config is loaded
-    expect(prefab.isEnabled("foo")).toBe(false);
+    expect(reforge.isEnabled("foo")).toBe(false);
 
     // callback should not be called when no config is loaded
     await waitForAsyncCall();
     expect(callback).toHaveBeenCalledTimes(0);
 
-    prefab.setConfig({ foo: true });
+    reforge.setConfig({ foo: true });
 
-    expect(prefab.isEnabled("foo")).toBe(true);
+    expect(reforge.isEnabled("foo")).toBe(true);
 
     await waitForAsyncCall();
     expect(callback).toHaveBeenCalledWith("foo", true, { contexts: {} });
@@ -82,21 +82,21 @@ describe("afterEvaluationCallback", () => {
 
   test("isEnabled with Context", async () => {
     const callback = jest.fn();
-    const prefab = new Prefab();
+    const reforge = new Reforge();
 
-    await setContext(prefab, exampleContext);
-    prefab.afterEvaluationCallback = callback;
+    await setContext(reforge, exampleContext);
+    reforge.afterEvaluationCallback = callback;
 
     // it is false when no config is loaded
-    expect(prefab.isEnabled("foo")).toBe(false);
+    expect(reforge.isEnabled("foo")).toBe(false);
 
     // callback should not be called when no config is loaded
     await waitForAsyncCall();
     expect(callback).toHaveBeenCalledTimes(0);
 
-    prefab.setConfig({ foo: true });
+    reforge.setConfig({ foo: true });
 
-    expect(prefab.isEnabled("foo")).toBe(true);
+    expect(reforge.isEnabled("foo")).toBe(true);
 
     await waitForAsyncCall();
     expect(callback).toHaveBeenCalledWith("foo", true, exampleContext);

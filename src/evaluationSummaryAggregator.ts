@@ -6,7 +6,7 @@
 
 import { PeriodicSync } from "./periodicSync";
 import { Config, ConfigEvaluationMetadata } from "./config";
-import { type prefab } from "./prefab";
+import { type reforge } from "./reforge";
 
 export type ConfigEvaluationCounter = Omit<ConfigEvaluationMetadata, "type"> & {
   selectedValue: any;
@@ -60,7 +60,7 @@ export const massageConfigForTelemetry = (
 class EvaluationSummaryAggregator extends PeriodicSync<ConfigEvaluationCounter> {
   private maxKeys: number;
 
-  constructor(client: typeof prefab, maxKeys: number, syncInterval?: number) {
+  constructor(client: typeof reforge, maxKeys: number, syncInterval?: number) {
     super(client, "EvaluationSummaryAggregator", syncInterval ?? 30000);
 
     this.maxKeys = maxKeys;

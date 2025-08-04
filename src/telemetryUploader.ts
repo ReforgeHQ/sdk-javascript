@@ -55,7 +55,7 @@ export default class TelemetryUploader {
 
         // eslint-disable-next-line no-console
         console.warn(
-          `Prefab warning: Error uploading telemetry ${response.status} ${response.statusText}`
+          `Reforge warning: Error uploading telemetry ${response.status} ${response.statusText}`
         );
 
         return response.status;
@@ -70,7 +70,7 @@ export default class TelemetryUploader {
         if (error.name === "AbortError") {
           try {
             // eslint-disable-next-line no-console
-            console.debug("Prefab telemetry request aborted");
+            console.debug("Reforge telemetry request aborted");
           } catch (e) {
             // no-op
           }

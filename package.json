@@ -1,5 +1,5 @@
 {
-  "name": "@prefab-cloud/prefab-cloud-js",
+  "name": "@reforge-com/sdk-javascript",
   "version": "0.4.5",
   "description": "Feature Flags & Dynamic Configuration as a Service",
   "main": "dist/index.cjs",
@@ -31,7 +31,7 @@
   "scripts": {
     "build": "rm -rf dist/ && tsup",
     "dev": "tsup --watch",
-    "bundle": "esbuild --minify --target=esnext --bundle --outfile=dist/prefab.bundle.js --global-name=window.prefabNamespace dist/index.cjs && echo 'window.prefab = window.prefabNamespace.prefab' >> dist/prefab.bundle.js",
+    "bundle": "esbuild --minify --target=esnext --bundle --outfile=dist/reforge.bundle.js --global-name=window.reforgeNamespace dist/index.cjs && echo 'window.reforge = window.reforgeNamespace.reforge' >> dist/reforge.bundle.js",
     "lint": "eslint --ext .ts,.tsx src/",
     "lint:fix": "eslint --fix --ext .ts,.tsx src/",
     "postversion": "git push && git push --tags",
@@ -43,16 +43,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/prefab-cloud/prefab-cloud-js.git"
+    "url": "git+https://github.com/reforgehq/sdk-javascript.git"
   },
   "keywords": [
     "feature-flags",
     "config"
   ],
   "bugs": {
-    "url": "https://github.com/prefab-cloud/prefab-cloud-js/issues"
+    "url": "https://github.com/reforgehq/sdk-javascript/issues"
   },
-  "homepage": "https://github.com/prefab-cloud/prefab-cloud-js#readme",
+  "homepage": "https://github.com/reforgehq/sdk-javascript#readme",
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },

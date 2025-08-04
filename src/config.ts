@@ -56,7 +56,7 @@ const valueFor = (value: Value, type: string, key: string): ConfigValue => {
         return JSON.parse(rawValue as string);
       } catch (e) {
         // eslint-disable-next-line no-console
-        console.error(`Error parsing JSON from Prefab config ${key}`, e, rawValue);
+        console.error(`Error parsing JSON from Reforge config ${key}`, e, rawValue);
         return value[type];
       }
     case "duration": {

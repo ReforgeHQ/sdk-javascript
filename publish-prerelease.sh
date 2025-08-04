@@ -14,4 +14,4 @@ npm run build
 npm publish --tag pre
 
 echo "Pre-release published successfully! To install it, use:"
-echo "npm install @prefab-cloud/prefab-cloud-js@pre"
+echo "npm install @reforge-com/sdk-javascript@pre"
