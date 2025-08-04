@@ -192,5 +192,5 @@ This script:
 To install the pre-release version:
 
 ```bash
-npm install @reforge-com/javascript@pre
+npm install @reforge-com/javascript
 ```

@@ -9,6 +9,8 @@ jobs:
       version-changed: ${{ steps.check.outputs.changed }}
       current-version: ${{ steps.check.outputs.current-version }}
       previous-version: ${{ steps.check.outputs.previous-version }}
+      is-prerelease: ${{ steps.check.outputs.is-prerelease }}
+      npm-tag: ${{ steps.check.outputs.npm-tag }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,6 +32,18 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
+          # Check if this is a pre-release version
+          if [[ "$current_version" =~ -(alpha|beta|rc|dev|pre|canary|next) ]]; then
+            echo "is-prerelease=true" >> $GITHUB_OUTPUT
+            tag="$(echo "$current_version" | cut -d'-' -f2)"
+            echo "npm-tag=$tag" >> $GITHUB_OUTPUT
+            echo "Detected pre-release version with tag: $tag"
+          else
+            echo "is-prerelease=false" >> $GITHUB_OUTPUT
+            echo "npm-tag=latest" >> $GITHUB_OUTPUT
+            echo "Detected stable release version"
+          fi
+
   build-and-publish:
     runs-on: ubuntu-latest
     needs: check-version
@@ -48,14 +62,22 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - run: npm ci
       - run: npm run build
-      - run: npm publish --provenance --access public
+      - name: Publish to npm
+        run: |
+          if [ "${{ needs.check-version.outputs.is-prerelease }}" == "true" ]; then
+            npm publish --provenance --access public --tag ${{ needs.check-version.outputs.npm-tag }}
+          else
+            npm publish --provenance --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   create-release:
     runs-on: ubuntu-latest
     needs: [check-version, build-and-publish]
-    if: needs.build-and-publish.result == 'success'
+    if:
+      needs.build-and-publish.result == 'success' && needs.check-version.outputs.is-prerelease ==
+      'false'
     permissions:
       contents: write
     steps:
