@@ -90,7 +90,7 @@ jobs:
           tag_name: v${{ needs.check-version.outputs.current-version }}
           release_name: v${{ needs.check-version.outputs.current-version }}
           body: |
-            See [CHANGELOG](https://github.com/reforgehq/sdk-javascript/blob/main/CHANGELOG.md) for details.
+            See [CHANGELOG](https://github.com/ReforgeHQ/sdk-javascript/blob/main/CHANGELOG.md) for details.
 
             Published to npm: [@reforge-com/javascript@${{ needs.check-version.outputs.current-version }}](https://www.npmjs.com/package/@reforge-com/javascript/v/${{ needs.check-version.outputs.current-version }})
           draft: false
