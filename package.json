@@ -1,6 +1,6 @@
 {
   "name": "@reforge-com/javascript",
-  "version": "0.0.0-pre.1",
+  "version": "0.0.0-pre.2",
   "description": "Feature Flags & Dynamic Configuration as a Service",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -42,16 +42,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/reforgehq/sdk-javascript.git"
+    "url": "https://github.com/ReforgeHQ/sdk-javascript.git"
   },
   "keywords": [
     "feature-flags",
     "config"
   ],
   "bugs": {
-    "url": "https://github.com/reforgehq/sdk-javascript/issues"
+    "url": "https://github.com/ReforgeHQ/sdk-javascript/issues"
   },
-  "homepage": "https://github.com/reforgehq/sdk-javascript#readme",
+  "homepage": "https://github.com/ReforgeHQ/sdk-javascript#readme",
   "dependencies": {
     "uuid": "^9.0.1"
   },
