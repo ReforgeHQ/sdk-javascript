@@ -1,14 +1,26 @@
 name: CI
+
 on: push
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
-      - name: Install modules
-        run: npm i
+          node-version-file: ".tool-versions"
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Run prettier
+        run: npm run prettier
+
+      - name: Run lints
+        run: npm run lint
+
       - name: Run tests
         run: npm run test
