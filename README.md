@@ -1,10 +1,10 @@
-# @reforge-com/sdk-javascript
+# @reforge-com/javascript
 
 A client for [Reforge]
 
 ## Installation
 
-`npm install @reforge-com/sdk-javascript` or `yarn add @reforge-com/sdk-javascript`
+`npm install @reforge-com/javascript` or `yarn add @reforge-com/javascript`
 
 If you'd prefer to use the standalone `<script>` tag approach, we recommend using
 [jsDelivr][jsDelivr] for a minified/bundled version.
@@ -14,7 +14,7 @@ If you'd prefer to use the standalone `<script>` tag approach, we recommend usin
 Initialize reforge with your api key and a `Context` for the current user/visitor/device/request:
 
 ```javascript
-import { reforge, Context } from "@reforge-com/sdk-javascript";
+import { reforge, Context } from "@reforge-com/javascript";
 
 const options = {
   apiKey: "1234",
@@ -151,7 +151,7 @@ it("shows the turbo button when the feature is enabled", () => {
 ```
 
 [Reforge]: https://www.prefab.cloud/
-[jsDelivr]: https://www.jsdelivr.com/package/npm/@reforge-com/sdk-javascript
+[jsDelivr]: https://www.jsdelivr.com/package/npm/@reforge-com/javascript
 
 ## Release Scripts
 
@@ -192,5 +192,5 @@ This script:
 To install the pre-release version:
 
 ```bash
-npm install @reforge-com/sdk-javascript@pre
+npm install @reforge-com/javascript@pre
 ```

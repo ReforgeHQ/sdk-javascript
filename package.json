@@ -1,6 +1,6 @@
 {
-  "name": "@reforge-com/sdk-javascript",
-  "version": "0.4.5",
+  "name": "@reforge-com/javascript",
+  "version": "0.0.0-pre.0",
   "description": "Feature Flags & Dynamic Configuration as a Service",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
