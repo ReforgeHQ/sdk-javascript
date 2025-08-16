@@ -1,7 +1,8 @@
 import { reforge, Reforge, ReforgeBootstrap } from "./src/reforge";
 import { Config } from "./src/config";
 import Context from "./src/context";
-import version from "./src/version";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { version } = require("./package.json");
 
 export { reforge, Reforge, Config, Context, version };
 
