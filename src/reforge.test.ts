@@ -4,7 +4,9 @@ import { Contexts } from "./context";
 import { type EvaluationPayload } from "./config";
 import { DEFAULT_TIMEOUT } from "./apiHelpers";
 import { wait } from "../test/wait";
-import version from "./version";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { version } = require("../package.json");
 
 enableFetchMocks();
 

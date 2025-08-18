@@ -1,8 +1,10 @@
 import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
 import Context from "./context";
 import Loader from "./loader";
-import version from "./version";
 import { wait } from "../test/wait";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { version } = require("../package.json");
 
 enableFetchMocks();
 

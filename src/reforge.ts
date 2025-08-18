@@ -8,7 +8,8 @@ import Loader, { CollectContextModeType } from "./loader";
 import { PREFIX as loggerPrefix, isValidLogLevel, Severity, shouldLog } from "./logger";
 import TelemetryUploader from "./telemetryUploader";
 import { LoggerAggregator } from "./loggerAggregator";
-import version from "./version";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { version } = require("../package.json");
 
 type EvaluationCallback = (key: string, value: ConfigValue, context: Context | undefined) => void;
 
