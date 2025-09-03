@@ -213,11 +213,11 @@ describe("poll", () => {
   });
 });
 
-describe("setConfig", () => {
+describe("hydrate", () => {
   it("works when types are not provided", () => {
     expect(reforge.configs).toEqual({});
 
-    reforge.setConfig({
+    reforge.hydrate({
       turbo: 2.5,
       foo: true,
       jsonExample: { foo: "bar", baz: 123 },
@@ -287,7 +287,7 @@ describe("bootstrapping", () => {
 });
 
 test("get", () => {
-  reforge.setConfig({
+  reforge.hydrate({
     evaluations: {
       turbo: { value: { double: 2.5 } },
       durationExample: { value: { duration: { millis: 1884000, definition: "PT1884S" } } },
@@ -310,7 +310,7 @@ test("get", () => {
 });
 
 test("getDuration", () => {
-  reforge.setConfig({
+  reforge.hydrate({
     evaluations: {
       turbo: { value: { double: 2.5 } },
       durationExample: {
@@ -333,9 +333,31 @@ test("isEnabled", () => {
   // it is false when no config is loaded
   expect(reforge.isEnabled("foo")).toBe(false);
 
-  reforge.setConfig({ foo: true });
+  reforge.hydrate({ foo: true });
 
   expect(reforge.isEnabled("foo")).toBe(true);
+});
+
+describe("extract", () => {
+  it("correctly extracts configuration values", () => {
+    reforge.hydrate({
+      turbo: 2.5,
+      foo: true,
+      jsonExample: { foo: "bar", baz: 123 },
+    });
+
+    const extracted = reforge.extract();
+    expect(extracted).toEqual({
+      turbo: 2.5,
+      foo: true,
+      jsonExample: { foo: "bar", baz: 123 },
+    });
+  });
+
+  it("returns an empty object when no configs are set", () => {
+    const extracted = reforge.extract();
+    expect(extracted).toEqual({});
+  });
 });
 
 describe("shouldLog", () => {
@@ -358,7 +380,7 @@ describe("shouldLog", () => {
   });
 
   test("compares against the value when present", () => {
-    reforge.setConfig({
+    reforge.hydrate({
       "log-level.example": "INFO",
     });
 
@@ -382,7 +404,7 @@ describe("shouldLog", () => {
   test("traverses the hierarchy to get the closest level for the loggerName", () => {
     const loggerName = "some.test.name.with.more.levels";
 
-    reforge.setConfig({
+    reforge.hydrate({
       "log-level.some.test.name": "TRACE",
       "log-level.some.test": "DEBUG",
       "log-level.irrelevant": "ERROR",
@@ -422,7 +444,7 @@ describe("shouldLog", () => {
   });
 
   it("can use the root log level setting if nothing is found in the hierarchy", () => {
-    reforge.setConfig({
+    reforge.hydrate({
       "log-level": "INFO",
     });
 

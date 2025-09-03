@@ -25,7 +25,7 @@ describe("afterEvaluationCallback", () => {
     const reforge = new Reforge();
     reforge.afterEvaluationCallback = callback;
 
-    reforge.setConfig({ turbo: 2.5 });
+    reforge.hydrate({ turbo: 2.5 });
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -46,7 +46,7 @@ describe("afterEvaluationCallback", () => {
 
     reforge.afterEvaluationCallback = callback;
 
-    reforge.setConfig({ turbo: 2.5 });
+    reforge.hydrate({ turbo: 2.5 });
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -72,7 +72,7 @@ describe("afterEvaluationCallback", () => {
     await waitForAsyncCall();
     expect(callback).toHaveBeenCalledTimes(0);
 
-    reforge.setConfig({ foo: true });
+    reforge.hydrate({ foo: true });
 
     expect(reforge.isEnabled("foo")).toBe(true);
 
@@ -94,7 +94,7 @@ describe("afterEvaluationCallback", () => {
     await waitForAsyncCall();
     expect(callback).toHaveBeenCalledTimes(0);
 
-    reforge.setConfig({ foo: true });
+    reforge.hydrate({ foo: true });
 
     expect(reforge.isEnabled("foo")).toBe(true);
 
