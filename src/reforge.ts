@@ -135,7 +135,24 @@ export class Reforge {
     return this.load();
   }
 
-  get configs(): { [key: string]: Config } {
+  extract(): Record<string, Config["value"]> {
+    return Object.entries(this._configs).reduce(
+      (agg, [key, value]) => ({
+        ...agg,
+        [key]: value.value,
+      }),
+      {} as Record<string, Config["value"]>
+    );
+  }
+
+  hydrate(rawValues: RawConfigWithoutTypes | EvaluationPayload): void {
+    this.setConfigPrivate(rawValues);
+  }
+
+  get configs(): Record<string, Config> {
+    // eslint-disable-next-line no-console
+    console.warn("\x1b[33m%s\x1b[0m", 'Deprecated: Use "prefab.extract" instead');
+
     return this._configs;
   }
 
@@ -175,7 +192,7 @@ export class Reforge {
       const bootstrapContext = new Context(reforgeBootstrap.context);
 
       if (this.context.equals(bootstrapContext)) {
-        this.setConfig({ evaluations: reforgeBootstrap.evaluations });
+        this.setConfigPrivate({ evaluations: reforgeBootstrap.evaluations });
         return Promise.resolve();
       }
     }
@@ -186,7 +203,7 @@ export class Reforge {
     return this.loader
       .load()
       .then((rawValues: any) => {
-        this.setConfig(rawValues as EvaluationPayload);
+        this.setConfigPrivate(rawValues as EvaluationPayload);
       })
       .finally(() => {
         if (this.pollStatus.status === "running") {
@@ -255,6 +272,13 @@ export class Reforge {
   }
 
   setConfig(rawValues: RawConfigWithoutTypes | EvaluationPayload) {
+    // eslint-disable-next-line no-console
+    console.warn("\x1b[33m%s\x1b[0m", 'Deprecated: Use "prefab.hydrate" instead');
+
+    this.setConfigPrivate(rawValues);
+  }
+
+  private setConfigPrivate(rawValues: RawConfigWithoutTypes | EvaluationPayload) {
     this._configs = Config.digest(rawValues);
     this.loaded = true;
   }
@@ -275,7 +299,7 @@ export class Reforge {
       return undefined;
     }
 
-    const config = this.configs[key];
+    const config = this._configs[key];
 
     const value = config?.value;
 

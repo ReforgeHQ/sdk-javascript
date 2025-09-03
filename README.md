@@ -65,19 +65,21 @@ if (reforge.isEnabled('cool-feature') {
 setTimeout(ping, reforge.get('ping-delay'));
 ```
 
-Here's an explanation of each property
+## Client API
 
-| property        | example                               | purpose                                                                                      |
-| --------------- | ------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `isEnabled`     | `reforge.isEnabled("new-logo")`       | returns a boolean (default `false`) if a feature is enabled based on the current context     |
-| `get`           | `reforge.get('retry-count')`          | returns the value of a flag or config evaluated in the current context                       |
-| `getDuration`   | `reforge.getDuration('http.timeout')` | returns a duration object `{seconds: number, ms: number}`                                    |
-| `loaded`        | `if (reforge.loaded) { ... }`         | a boolean indicating whether reforge content has loaded                                      |
-| `shouldLog`     | `if (reforge.shouldLog(...)) {`       | returns a boolean indicating whether the proposed log level is valid for the current context |
-| `poll`          | `reforge.poll({frequencyInMs})`       | starts polling every `frequencyInMs` ms.                                                     |
-| `stopPolling`   | `reforge.stopPolling()`               | stops the polling process                                                                    |
-| `context`       | `reforge.context`                     | get the current context (after `init()`).                                                    |
-| `updateContext` | `reforge.updateContext(newContext)`   | update the context and refetch. Pass `false` as a second argument to skip refetching         |
+| property        | example                                | purpose                                                                                      |
+| --------------- | -------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `isEnabled`     | `reforge.isEnabled("new-logo")`        | returns a boolean (default `false`) if a feature is enabled based on the current context     |
+| `get`           | `reforge.get('retry-count')`           | returns the value of a flag or config evaluated in the current context                       |
+| `getDuration`   | `reforge.getDuration('http.timeout')`  | returns a duration object `{seconds: number, ms: number}`                                    |
+| `loaded`        | `if (reforge.loaded) { ... }`          | a boolean indicating whether reforge content has loaded                                      |
+| `shouldLog`     | `if (reforge.shouldLog(...)) {`        | returns a boolean indicating whether the proposed log level is valid for the current context |
+| `poll`          | `reforge.poll({frequencyInMs})`        | starts polling every `frequencyInMs` ms.                                                     |
+| `stopPolling`   | `reforge.stopPolling()`                | stops the polling process                                                                    |
+| `context`       | `reforge.context`                      | get the current context (after `init()`).                                                    |
+| `updateContext` | `reforge.updateContext(newContext)`    | update the context and refetch. Pass `false` as a second argument to skip refetching         |
+| `extract`       | `reforge.extract()`                    | returns the current config as a plain object of key, config value pairs                      |
+| `hydrate`       | `reforge.hydrate(configurationObject)` | sets the current config based on a plain object of key, config value pairs                   |
 
 ## `shouldLog()`
 
