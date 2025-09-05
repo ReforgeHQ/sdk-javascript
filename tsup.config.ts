@@ -1,13 +1,5 @@
 import { defineConfig } from "tsup";
 import { execSync } from "child_process";
-import fs from "fs";
-
-// Generate version file
-const version = process.env.VERSION || require("./package.json").version;
-const versionFileContent = `// THIS FILE IS GENERATED
-export default "${version}";
-`;
-fs.writeFileSync("./src/version.ts", versionFileContent);
 
 export default defineConfig({
   entry: ["index.ts"],
