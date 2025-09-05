@@ -1,5 +1,5 @@
 import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
-import { Reforge, Config, Context, type ReforgeBootstrap } from "../index";
+import { Reforge, Context, type ReforgeBootstrap } from "../index";
 import { Contexts } from "./context";
 import { type EvaluationPayload } from "./config";
 import { DEFAULT_TIMEOUT } from "./apiHelpers";
@@ -40,8 +40,8 @@ describe("init", () => {
 
     await reforge.init(defaultTestInitParams);
 
-    expect(reforge.configs).toEqual({
-      turbo: new Config("turbo", 2.5, "double", { double: 2.5 }),
+    expect(reforge.extract()).toEqual({
+      turbo: 2.5,
     });
     expect(reforge.loaded).toBe(true);
   });
@@ -53,7 +53,7 @@ describe("init", () => {
 
     reforge.init(defaultTestInitParams).catch((reason: any) => {
       expect(reason.message).toEqual("Network error");
-      expect(reforge.configs).toEqual({});
+      expect(reforge.extract()).toEqual({});
 
       expect(reforge.isEnabled("foo")).toBe(false);
     });
@@ -215,7 +215,7 @@ describe("poll", () => {
 
 describe("hydrate", () => {
   it("works when types are not provided", () => {
-    expect(reforge.configs).toEqual({});
+    expect(reforge.extract()).toEqual({});
 
     reforge.hydrate({
       turbo: 2.5,
@@ -224,11 +224,11 @@ describe("hydrate", () => {
       durationExample: { ms: 1884 * 1000, seconds: 1884 },
     });
 
-    expect(reforge.configs).toEqual({
-      turbo: new Config("turbo", 2.5, "number"),
-      foo: new Config("foo", true, "boolean"),
-      jsonExample: new Config("jsonExample", { foo: "bar", baz: 123 }, "object"),
-      durationExample: new Config("durationExample", { ms: 1884000, seconds: 1884 }, "object"),
+    expect(reforge.extract()).toEqual({
+      turbo: 2.5,
+      foo: true,
+      jsonExample: { foo: "bar", baz: 123 },
+      durationExample: { ms: 1884000, seconds: 1884 },
     });
 
     expect(reforge.isEnabled("foo")).toBe(true);
@@ -256,8 +256,8 @@ describe("bootstrapping", () => {
 
     await reforge.init(defaultTestInitParams);
 
-    expect(reforge.configs).toEqual({
-      turbo: new Config("turbo", 99.5, "double", { double: 99.5 }),
+    expect(reforge.extract()).toEqual({
+      turbo: 99.5,
     });
     expect(reforge.get("turbo")).toEqual(99.5);
     expect(reforge.loaded).toBe(true);
@@ -279,8 +279,8 @@ describe("bootstrapping", () => {
 
     await reforge.init(defaultTestInitParams);
 
-    expect(reforge.configs).toEqual({
-      turbo: new Config("turbo", 2.5, "double", { double: 2.5 }),
+    expect(reforge.extract()).toEqual({
+      turbo: 2.5,
     });
     expect(reforge.loaded).toBe(true);
   });

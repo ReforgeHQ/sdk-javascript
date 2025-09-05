@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.0-pre.3 - 2025-09-05
+
+- Remove deprecated methods and fix typing on public replacements
+
 ## 0.0.0-pre.0 - 2025-08-03
 
 - Reforge rebrand

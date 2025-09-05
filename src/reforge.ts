@@ -135,7 +135,7 @@ export class Reforge {
     return this.load();
   }
 
-  extract(): Record<string, Config["value"]> {
+  public extract(): Record<string, Config["value"]> {
     return Object.entries(this._configs).reduce(
       (agg, [key, value]) => ({
         ...agg,
@@ -145,15 +145,8 @@ export class Reforge {
     );
   }
 
-  hydrate(rawValues: RawConfigWithoutTypes | EvaluationPayload): void {
+  public hydrate(rawValues: RawConfigWithoutTypes | EvaluationPayload): void {
     this.setConfigPrivate(rawValues);
-  }
-
-  get configs(): Record<string, Config> {
-    // eslint-disable-next-line no-console
-    console.warn("\x1b[33m%s\x1b[0m", 'Deprecated: Use "prefab.extract" instead');
-
-    return this._configs;
   }
 
   get context(): Context {
@@ -269,13 +262,6 @@ export class Reforge {
       this.evalutionSummaryAggregator?.stop();
       this.loggerAggregator?.stop();
     }
-  }
-
-  setConfig(rawValues: RawConfigWithoutTypes | EvaluationPayload) {
-    // eslint-disable-next-line no-console
-    console.warn("\x1b[33m%s\x1b[0m", 'Deprecated: Use "prefab.hydrate" instead');
-
-    this.setConfigPrivate(rawValues);
   }
 
   private setConfigPrivate(rawValues: RawConfigWithoutTypes | EvaluationPayload) {
