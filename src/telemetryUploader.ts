@@ -1,14 +1,14 @@
 import { DEFAULT_TIMEOUT, headers } from "./apiHelpers";
 
 export type TelemetryUploaderParams = {
-  apiKey: string;
+  sdkKey: string;
   apiEndpoint?: string | undefined;
   timeout?: number;
   clientVersion: string;
 };
 
 export default class TelemetryUploader {
-  apiKey: string;
+  sdkKey: string;
 
   apiEndpoint: string;
 
@@ -19,12 +19,12 @@ export default class TelemetryUploader {
   abortTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
   constructor({
-    apiKey,
+    sdkKey,
     apiEndpoint = undefined,
     timeout,
     clientVersion,
   }: TelemetryUploaderParams) {
-    this.apiKey = apiKey;
+    this.sdkKey = sdkKey;
     this.apiEndpoint = apiEndpoint || "https://telemetry.prefab.cloud/api/v1";
     this.timeout = timeout || DEFAULT_TIMEOUT;
     this.clientVersion = clientVersion;
@@ -93,7 +93,7 @@ export default class TelemetryUploader {
     const options = {
       method: "POST",
       headers: {
-        ...headers(this.apiKey, this.clientVersion),
+        ...headers(this.sdkKey, this.clientVersion),
         "Content-Type": "application/json",
         Accept: "application/json",
       },

@@ -5,7 +5,7 @@ import Context from "./context";
 export type CollectContextModeType = "NONE" | "SHAPE_ONLY" | "PERIODIC_EXAMPLE";
 
 export type LoaderParams = {
-  apiKey: string;
+  sdkKey: string;
   context: Context;
   endpoints?: string[] | undefined;
   timeout?: number;
@@ -28,7 +28,7 @@ const defaultEndpoints = ["belt", "suspenders", "waistband"].map(
 const EARLY_TIMEOUT = 2000;
 
 export default class Loader {
-  apiKey: string;
+  sdkKey: string;
 
   context: Context;
 
@@ -47,14 +47,14 @@ export default class Loader {
   isAborted = false;
 
   constructor({
-    apiKey,
+    sdkKey,
     context,
     endpoints = undefined,
     timeout,
     collectContextMode = "PERIODIC_EXAMPLE",
     clientVersion = "",
   }: LoaderParams) {
-    this.apiKey = apiKey;
+    this.sdkKey = sdkKey;
     this.context = context;
     this.endpoints = endpoints || defaultEndpoints;
     this.timeout = timeout || DEFAULT_TIMEOUT;
@@ -126,7 +126,7 @@ export default class Loader {
     }
 
     const options = {
-      headers: headers(this.apiKey, this.clientVersion),
+      headers: headers(this.sdkKey, this.clientVersion),
     };
 
     const promise = new Promise((resolve, reject) => {

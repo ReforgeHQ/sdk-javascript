@@ -12,12 +12,12 @@ const context = new Context({
   user: { id: "123", email: "test@example.com" },
   device: { mobile: true },
 });
-const apiKey = "apiKey";
+const sdkKey = "sdkKey";
 let loader: Loader;
 
 describe("overriding endpoints", () => {
   it("has one default endpoint", () => {
-    loader = new Loader({ context, apiKey });
+    loader = new Loader({ context, sdkKey });
 
     expect(loader.endpoints).toStrictEqual([
       "https://belt.prefab.cloud/api/v2",
@@ -32,7 +32,7 @@ describe("overriding endpoints", () => {
       "https://example.com/api/v2",
     ];
 
-    loader = new Loader({ context, apiKey, endpoints });
+    loader = new Loader({ context, sdkKey, endpoints });
 
     expect(loader.endpoints).toStrictEqual([
       "https://example.global.ssl.fastly.net/api/v2",
@@ -74,7 +74,7 @@ describe("load", () => {
 
       loader = new Loader({
         context,
-        apiKey,
+        sdkKey,
         timeout: TIMEOUT,
         endpoints,
       });
@@ -107,7 +107,7 @@ describe("load", () => {
         requestUrl = new URL(req.url);
 
         requestHeaders.set("Authorization", req.headers.get("Authorization"));
-        requestHeaders.set("X-Reforge-Client-Version", req.headers.get("X-Reforge-Client-Version"));
+        requestHeaders.set("X-Reforge-SDK-Version", req.headers.get("X-Reforge-SDK-Version"));
 
         return {
           status: 200,
@@ -115,7 +115,7 @@ describe("load", () => {
         };
       });
 
-      loader = new Loader({ context, apiKey, clientVersion: `sdk-javascript-${version}` });
+      loader = new Loader({ context, sdkKey, clientVersion: `sdk-javascript-${version}` });
 
       const results = await loader.load();
       expect(results).toStrictEqual(data);
@@ -131,8 +131,8 @@ describe("load", () => {
         "/api/v2/configs/eval-with-context/eyJjb250ZXh0cyI6W3sidHlwZSI6InVzZXIiLCJ2YWx1ZXMiOnsiaWQiOnsic3RyaW5nIjoiMTIzIn0sImVtYWlsIjp7InN0cmluZyI6InRlc3RAZXhhbXBsZS5jb20ifX19LHsidHlwZSI6ImRldmljZSIsInZhbHVlcyI6eyJtb2JpbGUiOnsiYm9vbCI6dHJ1ZX19fV19"
       );
 
-      expect(requestHeaders.get("Authorization")).toStrictEqual("Basic dTphcGlLZXk=");
-      expect(requestHeaders.get("X-Reforge-Client-Version")).toStrictEqual(
+      expect(requestHeaders.get("Authorization")).toStrictEqual("Basic dTpzZGtLZXk=");
+      expect(requestHeaders.get("X-Reforge-SDK-Version")).toStrictEqual(
         `sdk-javascript-${version}`
       );
     });
@@ -156,7 +156,7 @@ describe("load", () => {
         };
       });
 
-      loader = new Loader({ context, apiKey });
+      loader = new Loader({ context, sdkKey });
 
       const results = await loader.load();
 
@@ -179,7 +179,7 @@ describe("load", () => {
         return Promise.reject(new Error("Network error"));
       });
 
-      loader = new Loader({ context, apiKey });
+      loader = new Loader({ context, sdkKey });
 
       loader.load().catch((reason: any) => {
         expect(reason.message).toEqual("Network error");

@@ -17,7 +17,7 @@ type InitParams = Parameters<typeof reforge.init>[0];
 const defaultTestContext: Contexts = { user: { device: "desktop", key: "abcdefg" } };
 
 const defaultTestInitParams: InitParams = {
-  apiKey: "1234",
+  sdkKey: "1234",
   context: new Context(defaultTestContext),
   collectEvaluationSummaries: false,
 };
@@ -82,9 +82,7 @@ describe("init", () => {
     let headersAsserted = false;
 
     fetchMock.mockResponse(async (req) => {
-      expect(req.headers.get("X-Reforge-Client-Version")).toStrictEqual(
-        `sdk-javascript-${version}`
-      );
+      expect(req.headers.get("X-Reforge-SDK-Version")).toStrictEqual(`sdk-javascript-${version}`);
       headersAsserted = true;
 
       return {
@@ -101,7 +99,7 @@ describe("init", () => {
 
   it("allows opting out of eval summary telemetry", async () => {
     const params: InitParams = {
-      apiKey: "1234",
+      sdkKey: "1234",
       context: new Context({ user: { device: "desktop" } }),
     };
 
@@ -120,7 +118,7 @@ describe("init", () => {
     let headersAsserted = false;
 
     fetchMock.mockResponse(async (req) => {
-      expect(req.headers.get("X-Reforge-Client-Version")).toStrictEqual(
+      expect(req.headers.get("X-Reforge-SDK-Version")).toStrictEqual(
         `${nameOverride}-${versionOverride}`
       );
       headersAsserted = true;
