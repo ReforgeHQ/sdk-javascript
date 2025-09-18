@@ -82,9 +82,7 @@ describe("init", () => {
     let headersAsserted = false;
 
     fetchMock.mockResponse(async (req) => {
-      expect(req.headers.get("X-Reforge-SDK-Version")).toStrictEqual(
-        `sdk-javascript-${version}`
-      );
+      expect(req.headers.get("X-Reforge-SDK-Version")).toStrictEqual(`sdk-javascript-${version}`);
       headersAsserted = true;
 
       return {
