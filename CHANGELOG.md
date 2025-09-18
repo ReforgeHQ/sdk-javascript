@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.0-pre.4 - 2025-09-18
+
+- rename apiKey to sdkKey
+- change version header
+
 ## 0.0.0-pre.3 - 2025-09-05
 
 - Remove deprecated methods and fix typing on public replacements
