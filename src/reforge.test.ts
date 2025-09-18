@@ -17,7 +17,7 @@ type InitParams = Parameters<typeof reforge.init>[0];
 const defaultTestContext: Contexts = { user: { device: "desktop", key: "abcdefg" } };
 
 const defaultTestInitParams: InitParams = {
-  apiKey: "1234",
+  sdkKey: "1234",
   context: new Context(defaultTestContext),
   collectEvaluationSummaries: false,
 };
@@ -101,7 +101,7 @@ describe("init", () => {
 
   it("allows opting out of eval summary telemetry", async () => {
     const params: InitParams = {
-      apiKey: "1234",
+      sdkKey: "1234",
       context: new Context({ user: { device: "desktop" } }),
     };
 

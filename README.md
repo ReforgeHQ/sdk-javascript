@@ -11,13 +11,13 @@ If you'd prefer to use the standalone `<script>` tag approach, we recommend usin
 
 ## Usage in your app
 
-Initialize reforge with your api key and a `Context` for the current user/visitor/device/request:
+Initialize reforge with your sdk key and a `Context` for the current user/visitor/device/request:
 
 ```javascript
 import { reforge, Context } from "@reforge-com/javascript";
 
 const options = {
-  apiKey: "1234",
+  sdkKey: "1234",
   context: new Context({
     user: {
       email: "test@example.com",
@@ -35,7 +35,7 @@ await reforge.init(options);
 // `reforge` is available globally on the window object
 // `Context` is available globally as `window.reforgeNamespace.Context`
 const options = {
-  apiKey: "1234",
+  sdkKey: "1234",
   context: new reforgeNamespace.Context({
     user: {
       email: "test@example.com",

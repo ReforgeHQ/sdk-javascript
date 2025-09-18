@@ -19,7 +19,7 @@ export interface ReforgeBootstrap {
 }
 
 type InitParams = {
-  apiKey: string;
+  sdkKey: string;
   context: Context;
   endpoints?: string[] | undefined;
   apiEndpoint?: string;
@@ -70,7 +70,7 @@ export class Reforge {
   private _context: Context = new Context({});
 
   async init({
-    apiKey,
+    sdkKey,
     context: providedContext,
     endpoints = undefined,
     apiEndpoint,
@@ -94,7 +94,7 @@ export class Reforge {
     const clientNameAndVersionString = `${clientNameString}-${clientVersionString}`;
 
     this.loader = new Loader({
-      apiKey,
+      sdkKey,
       context,
       endpoints,
       timeout,
@@ -103,7 +103,7 @@ export class Reforge {
     });
 
     this._telemetryUploader = new TelemetryUploader({
-      apiKey,
+      sdkKey,
       apiEndpoint,
       timeout,
       clientVersion: clientNameAndVersionString,
