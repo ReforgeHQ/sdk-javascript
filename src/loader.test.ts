@@ -107,7 +107,7 @@ describe("load", () => {
         requestUrl = new URL(req.url);
 
         requestHeaders.set("Authorization", req.headers.get("Authorization"));
-        requestHeaders.set("X-Reforge-Client-Version", req.headers.get("X-Reforge-Client-Version"));
+        requestHeaders.set("X-Reforge-SDK-Version", req.headers.get("X-Reforge-SDK-Version"));
 
         return {
           status: 200,
@@ -131,8 +131,8 @@ describe("load", () => {
         "/api/v2/configs/eval-with-context/eyJjb250ZXh0cyI6W3sidHlwZSI6InVzZXIiLCJ2YWx1ZXMiOnsiaWQiOnsic3RyaW5nIjoiMTIzIn0sImVtYWlsIjp7InN0cmluZyI6InRlc3RAZXhhbXBsZS5jb20ifX19LHsidHlwZSI6ImRldmljZSIsInZhbHVlcyI6eyJtb2JpbGUiOnsiYm9vbCI6dHJ1ZX19fV19"
       );
 
-      expect(requestHeaders.get("Authorization")).toStrictEqual("Basic dTphcGlLZXk=");
-      expect(requestHeaders.get("X-Reforge-Client-Version")).toStrictEqual(
+      expect(requestHeaders.get("Authorization")).toStrictEqual("Basic dTpzZGtLZXk=");
+      expect(requestHeaders.get("X-Reforge-SDK-Version")).toStrictEqual(
         `sdk-javascript-${version}`
       );
     });
