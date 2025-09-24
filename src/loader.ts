@@ -21,9 +21,10 @@ export type FetchOptions = {
   headers: Headers;
 };
 
-const defaultEndpoints = ["belt", "suspenders", "waistband"].map(
-  (subdomain) => `https://${subdomain}.prefab.cloud/api/v2`
-);
+const defaultEndpoints = [
+  "https://primary.reforge.com/api/v2",
+  "https://secondary.reforge.com/api/v2",
+];
 
 const EARLY_TIMEOUT = 2000;
 

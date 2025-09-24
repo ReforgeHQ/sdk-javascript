@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.0-pre.5 - 2025-09-24
+
+- Use reforge.com endpoints
+
 ## 0.0.0-pre.4 - 2025-09-18
 
 - rename apiKey to sdkKey
