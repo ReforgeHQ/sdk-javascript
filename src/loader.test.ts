@@ -20,9 +20,8 @@ describe("overriding endpoints", () => {
     loader = new Loader({ context, sdkKey });
 
     expect(loader.endpoints).toStrictEqual([
-      "https://belt.prefab.cloud/api/v2",
-      "https://suspenders.prefab.cloud/api/v2",
-      "https://waistband.prefab.cloud/api/v2",
+      "https://primary.reforge.com/api/v2",
+      "https://secondary.reforge.com/api/v2",
     ]);
   });
 
@@ -125,7 +124,7 @@ describe("load", () => {
         throw new Error("Fetch hasn't happened");
       }
 
-      expect(requestUrl.host).toEqual("belt.prefab.cloud");
+      expect(requestUrl.host).toEqual("primary.reforge.com");
 
       expect(requestUrl.pathname).toStrictEqual(
         "/api/v2/configs/eval-with-context/eyJjb250ZXh0cyI6W3sidHlwZSI6InVzZXIiLCJ2YWx1ZXMiOnsiaWQiOnsic3RyaW5nIjoiMTIzIn0sImVtYWlsIjp7InN0cmluZyI6InRlc3RAZXhhbXBsZS5jb20ifX19LHsidHlwZSI6ImRldmljZSIsInZhbHVlcyI6eyJtb2JpbGUiOnsiYm9vbCI6dHJ1ZX19fV19"
@@ -166,7 +165,7 @@ describe("load", () => {
       if (!requestUrl) {
         throw new Error("Last fetch hasn't happened");
       }
-      expect(requestUrl.host).toStrictEqual("suspenders.prefab.cloud");
+      expect(requestUrl.host).toStrictEqual("secondary.reforge.com");
     });
 
     it("fails when no endpoints are reachable", async () => {
@@ -183,13 +182,13 @@ describe("load", () => {
 
       loader.load().catch((reason: any) => {
         expect(reason.message).toEqual("Network error");
-        expect(fetchCount).toStrictEqual(3);
+        expect(fetchCount).toStrictEqual(2);
 
         if (!requestUrl) {
           throw new Error("Last fetch hasn't happened");
         }
 
-        expect(requestUrl.host).toStrictEqual("waistband.prefab.cloud");
+        expect(requestUrl.host).toStrictEqual("secondary.reforge.com");
       });
     });
   });

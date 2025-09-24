@@ -493,7 +493,7 @@ describe("updateContext", () => {
     }
 
     expect(invokedUrl).toStrictEqual(
-      `https://belt.prefab.cloud/api/v2/configs/eval-with-context/${initialContext.encode()}?collectContextMode=PERIODIC_EXAMPLE`
+      `https://primary.reforge.com/api/v2/configs/eval-with-context/${initialContext.encode()}?collectContextMode=PERIODIC_EXAMPLE`
     );
 
     const newContext = new Context({ user: { device: "mobile" } });
@@ -504,7 +504,7 @@ describe("updateContext", () => {
     expect(reforge.context).toStrictEqual(newContext);
 
     expect(invokedUrl).toStrictEqual(
-      `https://belt.prefab.cloud/api/v2/configs/eval-with-context/${newContext.encode()}?collectContextMode=PERIODIC_EXAMPLE`
+      `https://primary.reforge.com/api/v2/configs/eval-with-context/${newContext.encode()}?collectContextMode=PERIODIC_EXAMPLE`
     );
   });
 });
