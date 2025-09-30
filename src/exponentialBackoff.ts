@@ -1,6 +1,4 @@
 export class ExponentialBackoff {
-  private initialDelay: number;
-
   private maxDelay: number;
 
   private multiplier: number;
@@ -9,7 +7,6 @@ export class ExponentialBackoff {
 
   // arguments are in seconds
   constructor(maxDelay: number, initialDelay = 2, multiplier = 2) {
-    this.initialDelay = initialDelay;
     this.maxDelay = maxDelay;
     this.multiplier = multiplier;
     this.delay = initialDelay;

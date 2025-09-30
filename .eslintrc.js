@@ -25,6 +25,8 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "no-shadow": "off", // disable base rule for TypeScript
+    "@typescript-eslint/no-shadow": ["error"],
     "import/prefer-default-export": "off",
     "import/extensions": [
       "error",

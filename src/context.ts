@@ -1,8 +1,5 @@
-import Key from "./key";
-import ContextValue from "./contextValue";
+import { Contexts, ContextValue } from "./types";
 import base64Encode from "./base64Encode";
-
-export type Contexts = { [key: Key]: Record<string, ContextValue> };
 
 const isEqual = (a: Contexts, b: Contexts) => {
   const aKeys = Object.keys(a);

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.0-pre.6 - 2025-09-30
+
+- Support extendable typescript types w/typegen from cli
+
 ## 0.0.0-pre.5 - 2025-09-24
 
 - Use reforge.com endpoints
