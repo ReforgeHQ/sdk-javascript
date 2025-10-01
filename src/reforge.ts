@@ -1,24 +1,33 @@
 import { v4 as uuid } from "uuid";
 
 import { Config, EvaluationPayload, RawConfigWithoutTypes } from "./config";
-import ConfigValue, { type Duration } from "./configValue";
-import Context, { Contexts } from "./context";
+import type {
+  Duration,
+  TypedFrontEndConfigurationRaw,
+  FrontEndConfigurationRaw,
+  Contexts,
+} from "./types";
+import Context from "./context";
 import { EvaluationSummaryAggregator } from "./evaluationSummaryAggregator";
 import Loader, { CollectContextModeType } from "./loader";
-import { PREFIX as loggerPrefix, isValidLogLevel, Severity, shouldLog } from "./logger";
+import { PREFIX as loggerPrefix, shouldLog, ShouldLogParams } from "./logger";
 import TelemetryUploader from "./telemetryUploader";
 import { LoggerAggregator } from "./loggerAggregator";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require("../package.json");
 
-type EvaluationCallback = (key: string, value: ConfigValue, context: Context | undefined) => void;
+type EvaluationCallback = <K extends keyof TypedFrontEndConfigurationRaw>(
+  key: K,
+  value: TypedFrontEndConfigurationRaw[K],
+  context: Context | undefined
+) => void;
 
 export interface ReforgeBootstrap {
   evaluations: EvaluationPayload;
   context: Contexts;
 }
 
-type InitParams = {
+export type ReforgeInitParams = {
   sdkKey: string;
   context: Context;
   endpoints?: string[] | undefined;
@@ -37,6 +46,8 @@ type PollStatus =
   | { status: "pending" }
   | { status: "stopped" }
   | { status: "running"; frequencyInMs: number };
+
+type PublicShouldLogParams = Omit<ShouldLogParams, "get">;
 
 export class Reforge {
   private _configs: { [key: string]: Config } = {};
@@ -81,7 +92,7 @@ export class Reforge {
     collectContextMode = "PERIODIC_EXAMPLE",
     clientNameString = "sdk-javascript",
     clientVersionString = version,
-  }: InitParams) {
+  }: ReforgeInitParams) {
     const context = providedContext ?? this.context;
 
     if (!context) {
@@ -269,11 +280,21 @@ export class Reforge {
     this.loaded = true;
   }
 
-  isEnabled(key: string): boolean {
+  isEnabled<
+    // We need to calcuate these live and not store in a type to ensure dynamic evaluation
+    // in upstream libraries that override the FrontEndConfigurationRaw interface
+    K extends keyof FrontEndConfigurationRaw extends never
+      ? string
+      : {
+          [IK in keyof TypedFrontEndConfigurationRaw]: TypedFrontEndConfigurationRaw[IK] extends boolean
+            ? IK
+            : never;
+        }[keyof TypedFrontEndConfigurationRaw],
+  >(key: K): boolean {
     return this.get(key) === true;
   }
 
-  get(key: string): ConfigValue {
+  get<K extends keyof TypedFrontEndConfigurationRaw>(key: K): TypedFrontEndConfigurationRaw[K] {
     if (!this.loaded) {
       if (!key.startsWith(loggerPrefix)) {
         // eslint-disable-next-line no-console
@@ -300,7 +321,17 @@ export class Reforge {
     return value;
   }
 
-  getDuration(key: string): Duration | undefined {
+  getDuration<
+    // We need to calcuate these live and not store in a type to ensure dynamic evaluation
+    // in upstream libraries that override the FrontEndConfigurationRaw interface
+    K extends keyof FrontEndConfigurationRaw extends never
+      ? string
+      : {
+          [IK in keyof TypedFrontEndConfigurationRaw]: TypedFrontEndConfigurationRaw[IK] extends Duration
+            ? IK
+            : never;
+        }[keyof TypedFrontEndConfigurationRaw],
+  >(key: K): Duration | undefined {
     const value = this.get(key);
 
     if (!value) {
@@ -317,10 +348,9 @@ export class Reforge {
     return value as Duration;
   }
 
-  shouldLog(args: Omit<Parameters<typeof shouldLog>[0], "get">, async = true): boolean {
-    if (this.collectLoggerNames && isValidLogLevel(args.desiredLevel)) {
-      const record = () =>
-        this.loggerAggregator?.record(args.loggerName, args.desiredLevel.toUpperCase() as Severity);
+  shouldLog(args: PublicShouldLogParams, async = true): boolean {
+    if (this.collectLoggerNames) {
+      const record = () => this.loggerAggregator?.record(args.loggerName, args.desiredLevel);
       if (async) {
         setTimeout(record);
       } else {

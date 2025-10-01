@@ -1,20 +1,21 @@
 import { DEFAULT_TIMEOUT, headers } from "./apiHelpers";
+import { TelemetryEvents } from "./types";
 
 export type TelemetryUploaderParams = {
   sdkKey: string;
-  apiEndpoint?: string | undefined;
+  apiEndpoint?: string;
   timeout?: number;
   clientVersion: string;
 };
 
 export default class TelemetryUploader {
-  sdkKey: string;
+  sdkKey: Required<TelemetryUploaderParams>["sdkKey"];
 
-  apiEndpoint: string;
+  apiEndpoint: Required<TelemetryUploaderParams>["apiEndpoint"];
 
-  timeout: number;
+  timeout: Required<TelemetryUploaderParams>["timeout"];
 
-  clientVersion: string;
+  clientVersion: Required<TelemetryUploaderParams>["clientVersion"];
 
   abortTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
@@ -38,7 +39,11 @@ export default class TelemetryUploader {
     return `${root}/telemetry`;
   }
 
-  postToEndpoint(options: object, resolve: (value: any) => void, reject: (value: any) => void) {
+  postToEndpoint(
+    options: RequestInit,
+    resolve: (value: unknown) => void,
+    reject: (value: unknown) => void
+  ) {
     const controller = new AbortController() as AbortController;
     const signal = controller?.signal;
     let isAborted = false;
@@ -89,7 +94,7 @@ export default class TelemetryUploader {
     }, this.timeout);
   }
 
-  post(data: any) {
+  post(data: TelemetryEvents) {
     const options = {
       method: "POST",
       headers: {

@@ -2,42 +2,18 @@
 
 // TODO: pause when offline?
 
-import { Severity } from "./logger";
+import { ReforgeLogLevel } from "./logger";
 import { PeriodicSync } from "./periodicSync";
 import { type reforge } from "./reforge";
+import { LoggerCounter, LoggersTelemetryEvent, TelemetryEvents } from "./types";
 
-type LoggerCounter = {
-  loggerName: string;
-  traces: number;
-  debugs: number;
-  infos: number;
-  warns: number;
-  errors: number;
-  fatals: number;
-};
-
-type LoggersTelemetryEvent = {
-  startAt: number;
-  endAt: number;
-  loggers: LoggerCounter[];
-};
-
-type TelemetryEvent = {
-  loggers: LoggersTelemetryEvent;
-};
-
-type TelemetryEvents = {
-  instanceHash: string;
-  events: TelemetryEvent[];
-};
-
-const SEVERITY_KEY: { [key in Severity]: keyof LoggerCounter } = {
-  TRACE: "traces",
-  DEBUG: "debugs",
-  INFO: "infos",
-  WARN: "warns",
-  ERROR: "errors",
-  FATAL: "fatals",
+const SEVERITY_KEY: { [key in ReforgeLogLevel]: Omit<keyof LoggerCounter, "loggerName"> } = {
+  [ReforgeLogLevel.Trace]: "traces",
+  [ReforgeLogLevel.Debug]: "debugs",
+  [ReforgeLogLevel.Info]: "infos",
+  [ReforgeLogLevel.Warn]: "warns",
+  [ReforgeLogLevel.Error]: "errors",
+  [ReforgeLogLevel.Fatal]: "fatals",
 };
 
 class LoggerAggregator extends PeriodicSync<LoggerCounter> {
@@ -49,7 +25,7 @@ class LoggerAggregator extends PeriodicSync<LoggerCounter> {
     this.maxLoggers = maxLoggers;
   }
 
-  record(logger: string, level: Severity): void {
+  record(logger: string, level: ReforgeLogLevel): void {
     if (this.data.size >= this.maxLoggers) return;
 
     // create counter entry if it doesn't exist

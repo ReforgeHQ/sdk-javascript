@@ -1,9 +1,10 @@
 import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
 import { Reforge, Context, type ReforgeBootstrap } from "../index";
-import { Contexts } from "./context";
+import { Contexts } from "./types";
 import { type EvaluationPayload } from "./config";
 import { DEFAULT_TIMEOUT } from "./apiHelpers";
 import { wait } from "../test/wait";
+import { ReforgeLogLevel } from "./logger";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require("../package.json");
@@ -363,16 +364,16 @@ describe("shouldLog", () => {
     expect(
       reforge.shouldLog({
         loggerName: "example",
-        desiredLevel: "INFO",
-        defaultLevel: "INFO",
+        desiredLevel: ReforgeLogLevel.Info,
+        defaultLevel: ReforgeLogLevel.Info,
       })
     ).toBe(true);
 
     expect(
       reforge.shouldLog({
         loggerName: "example",
-        desiredLevel: "DEBUG",
-        defaultLevel: "INFO",
+        desiredLevel: ReforgeLogLevel.Debug,
+        defaultLevel: ReforgeLogLevel.Info,
       })
     ).toBe(false);
   });
@@ -385,16 +386,16 @@ describe("shouldLog", () => {
     expect(
       reforge.shouldLog({
         loggerName: "example",
-        desiredLevel: "INFO",
-        defaultLevel: "ERROR",
+        desiredLevel: ReforgeLogLevel.Info,
+        defaultLevel: ReforgeLogLevel.Error,
       })
     ).toBe(true);
 
     expect(
       reforge.shouldLog({
         loggerName: "example",
-        desiredLevel: "DEBUG",
-        defaultLevel: "ERROR",
+        desiredLevel: ReforgeLogLevel.Debug,
+        defaultLevel: ReforgeLogLevel.Error,
       })
     ).toBe(false);
   });
@@ -411,32 +412,32 @@ describe("shouldLog", () => {
     expect(
       reforge.shouldLog({
         loggerName,
-        desiredLevel: "TRACE",
-        defaultLevel: "ERROR",
+        desiredLevel: ReforgeLogLevel.Trace,
+        defaultLevel: ReforgeLogLevel.Error,
       })
     ).toEqual(true);
 
     expect(
       reforge.shouldLog({
         loggerName: "some.test",
-        desiredLevel: "TRACE",
-        defaultLevel: "ERROR",
+        desiredLevel: ReforgeLogLevel.Trace,
+        defaultLevel: ReforgeLogLevel.Error,
       })
     ).toEqual(false);
 
     expect(
       reforge.shouldLog({
         loggerName: "some.test",
-        desiredLevel: "DEBUG",
-        defaultLevel: "ERROR",
+        desiredLevel: ReforgeLogLevel.Debug,
+        defaultLevel: ReforgeLogLevel.Error,
       })
     ).toEqual(true);
 
     expect(
       reforge.shouldLog({
         loggerName: "some.test",
-        desiredLevel: "INFO",
-        defaultLevel: "ERROR",
+        desiredLevel: ReforgeLogLevel.Info,
+        defaultLevel: ReforgeLogLevel.Error,
       })
     ).toEqual(true);
   });
@@ -449,16 +450,16 @@ describe("shouldLog", () => {
     expect(
       reforge.shouldLog({
         loggerName: "some.test",
-        desiredLevel: "INFO",
-        defaultLevel: "ERROR",
+        desiredLevel: ReforgeLogLevel.Info,
+        defaultLevel: ReforgeLogLevel.Error,
       })
     ).toEqual(true);
 
     expect(
       reforge.shouldLog({
         loggerName: "some.test",
-        desiredLevel: "DEBUG",
-        defaultLevel: "ERROR",
+        desiredLevel: ReforgeLogLevel.Debug,
+        defaultLevel: ReforgeLogLevel.Error,
       })
     ).toEqual(false);
   });

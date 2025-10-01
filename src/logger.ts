@@ -1,40 +1,51 @@
-import ConfigValue from "./configValue";
+import { TypedFrontEndConfigurationRaw } from "./types";
 
 export const PREFIX = "log-level";
+export enum ReforgeLogLevel {
+  Trace = 1,
+  Debug = 2,
+  Info = 3,
+  Warn = 4,
+  Error = 5,
+  Fatal = 6,
+}
 
-const WORD_LEVEL_LOOKUP: Readonly<Record<string, number>> = {
-  TRACE: 1,
-  DEBUG: 2,
-  INFO: 3,
-  WARN: 5,
-  ERROR: 6,
-  FATAL: 9,
+export type LogLevelWord = Uppercase<keyof typeof ReforgeLogLevel>;
+
+const WORD_LEVEL_LOOKUP: Readonly<Record<LogLevelWord, ReforgeLogLevel>> = {
+  TRACE: ReforgeLogLevel.Trace,
+  DEBUG: ReforgeLogLevel.Debug,
+  INFO: ReforgeLogLevel.Info,
+  WARN: ReforgeLogLevel.Warn,
+  ERROR: ReforgeLogLevel.Error,
+  FATAL: ReforgeLogLevel.Fatal,
 };
 
-export type Severity = keyof typeof WORD_LEVEL_LOOKUP;
+export const isValidLogLevel = (possibleLogLevel: string) =>
+  Object.keys(WORD_LEVEL_LOOKUP).includes(possibleLogLevel.toUpperCase());
 
-export const isValidLogLevel = (logLevel: string) =>
-  Object.keys(WORD_LEVEL_LOOKUP).includes(logLevel.toUpperCase());
+export interface ShouldLogParams {
+  loggerName: string;
+  desiredLevel: ReforgeLogLevel;
+  defaultLevel: ReforgeLogLevel;
+  get: <K extends keyof TypedFrontEndConfigurationRaw>(key: K) => TypedFrontEndConfigurationRaw[K];
+}
 
 export const shouldLog = ({
   loggerName,
   desiredLevel,
   defaultLevel,
   get,
-}: {
-  loggerName: string;
-  desiredLevel: string;
-  defaultLevel: string;
-  get: (key: string) => ConfigValue;
-}): boolean => {
+}: ShouldLogParams): boolean => {
   let loggerNameWithPrefix = `${PREFIX}.${loggerName}`;
-  const desiredLevelNumber = WORD_LEVEL_LOOKUP[desiredLevel.toUpperCase()];
 
   while (loggerNameWithPrefix.length > 0) {
     const resolvedLevel = get(loggerNameWithPrefix);
 
-    if (resolvedLevel !== undefined) {
-      return WORD_LEVEL_LOOKUP[resolvedLevel.toString()] <= desiredLevelNumber;
+    if (resolvedLevel) {
+      return (
+        WORD_LEVEL_LOOKUP[resolvedLevel.toString().toUpperCase() as LogLevelWord] <= desiredLevel
+      );
     }
 
     if (loggerNameWithPrefix.indexOf(".") === -1) {
@@ -44,5 +55,5 @@ export const shouldLog = ({
     loggerNameWithPrefix = loggerNameWithPrefix.slice(0, loggerNameWithPrefix.lastIndexOf("."));
   }
 
-  return WORD_LEVEL_LOOKUP[defaultLevel.toUpperCase()] <= desiredLevelNumber;
+  return defaultLevel <= desiredLevel;
 };

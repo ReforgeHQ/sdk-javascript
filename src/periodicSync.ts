@@ -1,4 +1,5 @@
 import { ExponentialBackoff } from "./exponentialBackoff";
+import { ReforgeLogLevel } from "./logger";
 import { type reforge } from "./reforge";
 
 abstract class PeriodicSync<T> {
@@ -78,8 +79,8 @@ abstract class PeriodicSync<T> {
       this.client.shouldLog(
         {
           loggerName,
-          desiredLevel: "debug",
-          defaultLevel: "error",
+          desiredLevel: ReforgeLogLevel.Debug,
+          defaultLevel: ReforgeLogLevel.Error,
         },
         false // synchronous so that this log ends up in the current batch
       )

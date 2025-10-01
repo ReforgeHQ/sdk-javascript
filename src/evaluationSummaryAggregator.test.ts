@@ -1,9 +1,6 @@
-import {
-  massageSelectedValue,
-  massageConfigForTelemetry,
-  ConfigEvaluationCounter,
-} from "./evaluationSummaryAggregator";
-import { Config, parseEvaluationPayload, EvaluationPayload } from "./config";
+import { massageSelectedValue, massageConfigForTelemetry } from "./evaluationSummaryAggregator";
+import { Config, parseEvaluationPayload, EvaluationPayload, ConfigValue } from "./config";
+import { ConfigEvaluationCounter } from "./types";
 
 describe("massageSelectedValue", () => {
   [
@@ -21,7 +18,11 @@ describe("massageSelectedValue", () => {
     [{ stringList: ["a", "b", "c"] }, { values: ["a", "b", "c"] }],
   ].forEach(([value, expected]) => {
     it(`should massage ${JSON.stringify(value)} to ${JSON.stringify(expected)}`, () => {
-      const config = new Config("key", Object.values(value)[0], Object.keys(value)[0]);
+      const config = new Config(
+        "key",
+        Object.values(value)[0],
+        Object.keys(value)[0] as keyof ConfigValue
+      );
       const massagedValue = massageSelectedValue(config);
 
       expect(massagedValue).toEqual(expected);

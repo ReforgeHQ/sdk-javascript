@@ -5,34 +5,15 @@
 // TODO: flush when we receive a config update (or as a result of a context update...but that should trigger a config update anyway)
 
 import { PeriodicSync } from "./periodicSync";
-import { Config, ConfigEvaluationMetadata } from "./config";
+import { Config } from "./config";
 import { type reforge } from "./reforge";
-
-export type ConfigEvaluationCounter = Omit<ConfigEvaluationMetadata, "type"> & {
-  selectedValue: any;
-  count: number;
-};
-
-type ConfigEvaluationSummary = {
-  key: string;
-  type: string; // FEATURE_FLAG, CONFIG, etc
-  counters: ConfigEvaluationCounter[];
-};
-
-type ConfigEvaluationSummaries = {
-  start: number;
-  end: number;
-  summaries: ConfigEvaluationSummary[];
-};
-
-type TelemetryEvent = {
-  summaries: ConfigEvaluationSummaries;
-};
-
-type TelemetryEvents = {
-  instanceHash: string;
-  events: TelemetryEvent[];
-};
+import {
+  ConfigEvaluationCounter,
+  ConfigEvaluationSummaries,
+  ConfigEvaluationSummary,
+  TelemetryEvents,
+  ConfigEvaluationMetadata,
+} from "./types";
 
 export const massageSelectedValue = (config: Config): any => {
   if (config.rawValue && (config.type === "duration" || config.type === "json")) {
