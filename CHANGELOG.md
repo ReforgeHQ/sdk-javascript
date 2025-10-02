@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.1 - 2025-10-01
+
+- Official patch release
+
 ## 0.0.0-pre.6 - 2025-09-30
 
 - Support extendable typescript types w/typegen from cli
