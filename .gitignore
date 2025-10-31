@@ -5,3 +5,8 @@ types/
 *.tgz
 tsconfig.tsbuildinfo
 .envrc
+
+# IDE and tool directories
+.idea/
+.claude/
+.yarn/
