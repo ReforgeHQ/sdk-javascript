@@ -5,7 +5,14 @@ import ConfigValue, { type Duration } from "./configValue";
 import Context, { Contexts } from "./context";
 import { EvaluationSummaryAggregator } from "./evaluationSummaryAggregator";
 import Loader, { CollectContextModeType } from "./loader";
-import { PREFIX as loggerPrefix, isValidLogLevel, Severity, shouldLog } from "./logger";
+import {
+  PREFIX as loggerPrefix,
+  isValidLogLevel,
+  LogLevel,
+  Severity,
+  shouldLog,
+  shouldLogAtLevel,
+} from "./logger";
 import TelemetryUploader from "./telemetryUploader";
 import { LoggerAggregator } from "./loggerAggregator";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -30,6 +37,7 @@ type InitParams = {
   collectContextMode?: CollectContextModeType;
   clientNameString?: string;
   clientVersionString?: string;
+  loggerKey?: string;
 };
 
 type PollStatus =
@@ -37,6 +45,61 @@ type PollStatus =
   | { status: "pending" }
   | { status: "stopped" }
   | { status: "running"; frequencyInMs: number };
+
+class ReforgeLogger {
+  constructor(private reforge: Reforge) {}
+
+  private log(message: string, level: LogLevel): void {
+    const configuredLevel = this.reforge.getLogLevel("");
+
+    if (shouldLogAtLevel(configuredLevel, level)) {
+      switch (level) {
+        case LogLevel.TRACE:
+        case LogLevel.DEBUG:
+          // eslint-disable-next-line no-console
+          console.debug(message);
+          break;
+        case LogLevel.INFO:
+          // eslint-disable-next-line no-console
+          console.info(message);
+          break;
+        case LogLevel.WARN:
+          // eslint-disable-next-line no-console
+          console.warn(message);
+          break;
+        case LogLevel.ERROR:
+        case LogLevel.FATAL:
+          // eslint-disable-next-line no-console
+          console.error(message);
+          break;
+      }
+    }
+  }
+
+  trace(message: string): void {
+    this.log(message, LogLevel.TRACE);
+  }
+
+  debug(message: string): void {
+    this.log(message, LogLevel.DEBUG);
+  }
+
+  info(message: string): void {
+    this.log(message, LogLevel.INFO);
+  }
+
+  warn(message: string): void {
+    this.log(message, LogLevel.WARN);
+  }
+
+  error(message: string): void {
+    this.log(message, LogLevel.ERROR);
+  }
+
+  fatal(message: string): void {
+    this.log(message, LogLevel.FATAL);
+  }
+}
 
 export class Reforge {
   private _configs: { [key: string]: Config } = {};
@@ -69,6 +132,14 @@ export class Reforge {
 
   private _context: Context = new Context({});
 
+  private _loggerKey = "log-levels.default";
+
+  public logger: ReforgeLogger;
+
+  constructor() {
+    this.logger = new ReforgeLogger(this);
+  }
+
   async init({
     sdkKey,
     context: providedContext,
@@ -81,6 +152,7 @@ export class Reforge {
     collectContextMode = "PERIODIC_EXAMPLE",
     clientNameString = "sdk-javascript",
     clientVersionString = version,
+    loggerKey = "log-levels.default",
   }: InitParams) {
     const context = providedContext ?? this.context;
 
@@ -89,6 +161,7 @@ export class Reforge {
     }
 
     this._context = context;
+    this._loggerKey = loggerKey;
 
     this.clientNameString = clientNameString;
     const clientNameAndVersionString = `${clientNameString}-${clientVersionString}`;
@@ -329,6 +402,20 @@ export class Reforge {
     }
 
     return shouldLog({ ...args, get: this.get.bind(this) });
+  }
+
+  getLogLevel(loggerName: string): LogLevel {
+    const value = this.get(this._loggerKey);
+
+    if (value && typeof value === "string") {
+      const upperValue = value.toUpperCase();
+      if (upperValue in LogLevel) {
+        return LogLevel[upperValue as keyof typeof LogLevel];
+      }
+    }
+
+    // Default to DEBUG if no config found or invalid value
+    return LogLevel.DEBUG;
   }
 
   isCollectingEvaluationSummaries(): boolean {
