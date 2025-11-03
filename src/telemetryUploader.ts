@@ -26,7 +26,7 @@ export default class TelemetryUploader {
     clientVersion,
   }: TelemetryUploaderParams) {
     this.sdkKey = sdkKey;
-    this.apiEndpoint = apiEndpoint || "https://telemetry.prefab.cloud/api/v1";
+    this.apiEndpoint = apiEndpoint || "https://telemetry.reforge.com/api/v1";
     this.timeout = timeout || DEFAULT_TIMEOUT;
     this.clientVersion = clientVersion;
   }
