@@ -18,7 +18,7 @@ export default class TelemetryUploader {
   clientVersion: Required<TelemetryUploaderParams>["clientVersion"];
 
   abortTimeoutId: ReturnType<typeof setTimeout> | undefined;
-  
+
   constructor({
     sdkKey,
     apiEndpoint = undefined,
