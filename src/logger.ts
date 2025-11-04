@@ -31,28 +31,38 @@ export interface ShouldLogParams {
   get: <K extends keyof TypedFrontEndConfigurationRaw>(key: K) => TypedFrontEndConfigurationRaw[K];
 }
 
+// LogLevel enum for public API
+export enum LogLevel {
+  TRACE = "TRACE",
+  DEBUG = "DEBUG",
+  INFO = "INFO",
+  WARN = "WARN",
+  ERROR = "ERROR",
+  FATAL = "FATAL",
+}
+
+// Get the numeric severity value for a LogLevel (lower = more verbose)
+export const getLogLevelSeverity = (level: LogLevel): number => WORD_LEVEL_LOOKUP[level];
+
+// Check if a log at desiredLevel should be logged given the configured level
+// Returns true if desiredLevel is at or above the configured level's severity
+export const shouldLogAtLevel = (configuredLevel: LogLevel, desiredLevel: LogLevel): boolean =>
+  WORD_LEVEL_LOOKUP[configuredLevel] <= WORD_LEVEL_LOOKUP[desiredLevel];
+
 export const shouldLog = ({
   loggerName,
   desiredLevel,
   defaultLevel,
   get,
 }: ShouldLogParams): boolean => {
-  let loggerNameWithPrefix = `${PREFIX}.${loggerName}`;
+  const loggerNameWithPrefix = `${PREFIX}.${loggerName}`;
 
-  while (loggerNameWithPrefix.length > 0) {
-    const resolvedLevel = get(loggerNameWithPrefix);
+  const resolvedLevel = get(loggerNameWithPrefix);
 
-    if (resolvedLevel) {
-      return (
-        WORD_LEVEL_LOOKUP[resolvedLevel.toString().toUpperCase() as LogLevelWord] <= desiredLevel
-      );
-    }
-
-    if (loggerNameWithPrefix.indexOf(".") === -1) {
-      break;
-    }
-
-    loggerNameWithPrefix = loggerNameWithPrefix.slice(0, loggerNameWithPrefix.lastIndexOf("."));
+  if (resolvedLevel) {
+    return (
+      WORD_LEVEL_LOOKUP[resolvedLevel.toString().toUpperCase() as LogLevelWord] <= desiredLevel
+    );
   }
 
   return defaultLevel <= desiredLevel;
