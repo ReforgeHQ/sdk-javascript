@@ -615,10 +615,12 @@ describe("logger", () => {
     reforge.logger.warn("Warn message");
     reforge.logger.error("Error message");
 
+    /* eslint-disable no-console */
     expect(console.debug).toHaveBeenCalledWith("Debug message");
     expect(console.info).toHaveBeenCalledWith("Info message");
     expect(console.warn).toHaveBeenCalledWith("Warn message");
     expect(console.error).toHaveBeenCalledWith("Error message");
+    /* eslint-enable no-console */
   });
 
   test("does not log when level is disabled", () => {
@@ -632,10 +634,12 @@ describe("logger", () => {
     reforge.logger.warn("Warn message");
     reforge.logger.error("Error message");
 
+    /* eslint-disable no-console */
     expect(console.debug).not.toHaveBeenCalled();
     expect(console.info).not.toHaveBeenCalled();
     expect(console.warn).not.toHaveBeenCalled();
     expect(console.error).toHaveBeenCalledWith("Error message");
+    /* eslint-enable no-console */
   });
 
   test("respects INFO level configuration", () => {
@@ -650,11 +654,13 @@ describe("logger", () => {
     reforge.logger.error("Error message");
     reforge.logger.fatal("Fatal message");
 
+    /* eslint-disable no-console */
     expect(console.debug).not.toHaveBeenCalled();
     expect(console.info).toHaveBeenCalledWith("Info message");
     expect(console.warn).toHaveBeenCalledWith("Warn message");
     expect(console.error).toHaveBeenCalledWith("Error message");
     expect(console.error).toHaveBeenCalledWith("Fatal message");
+    /* eslint-enable no-console */
   });
 
   test("trace uses debug console method", () => {
@@ -664,7 +670,9 @@ describe("logger", () => {
 
     reforge.logger.trace("Trace message");
 
+    /* eslint-disable no-console */
     expect(console.debug).toHaveBeenCalledWith("Trace message");
+    /* eslint-enable no-console */
   });
 
   test("fatal uses error console method", () => {
@@ -674,7 +682,9 @@ describe("logger", () => {
 
     reforge.logger.fatal("Fatal message");
 
+    /* eslint-disable no-console */
     expect(console.error).toHaveBeenCalledWith("Fatal message");
+    /* eslint-enable no-console */
   });
 
   test("uses custom logger key", async () => {
@@ -694,8 +704,10 @@ describe("logger", () => {
     reforge.logger.info("Info message");
     reforge.logger.warn("Warn message");
 
+    /* eslint-disable no-console */
     expect(console.info).not.toHaveBeenCalled();
     expect(console.warn).toHaveBeenCalledWith("Warn message");
+    /* eslint-enable no-console */
   });
 });
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { v4 as uuid } from "uuid";
 
 import { Config, EvaluationPayload, RawConfigWithoutTypes } from "./config";
@@ -56,8 +57,16 @@ type PollStatus =
 
 type PublicShouldLogParams = Omit<ShouldLogParams, "get">;
 
+// Forward declaration for ReforgeLogger
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
 class ReforgeLogger {
-  constructor(private reforge: Reforge) {}
+  // eslint-disable-next-line no-use-before-define
+  private reforge: Reforge;
+
+  // eslint-disable-next-line no-use-before-define
+  constructor(reforge: Reforge) {
+    this.reforge = reforge;
+  }
 
   private log(message: string, level: LogLevel): void {
     const configuredLevel = this.reforge.getLogLevel("");
@@ -82,6 +91,9 @@ class ReforgeLogger {
           // eslint-disable-next-line no-console
           console.error(message);
           break;
+        default:
+          // eslint-disable-next-line no-console
+          console.error(message);
       }
     }
   }
@@ -433,7 +445,7 @@ export class Reforge {
     return shouldLog({ ...args, get: this.get.bind(this) });
   }
 
-  getLogLevel(loggerName: string): LogLevel {
+  getLogLevel(_loggerName: string): LogLevel {
     const value = this.get(this._loggerKey);
 
     if (value && typeof value === "string") {

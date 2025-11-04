@@ -42,15 +42,12 @@ export enum LogLevel {
 }
 
 // Get the numeric severity value for a LogLevel (lower = more verbose)
-export const getLogLevelSeverity = (level: LogLevel): number => {
-  return WORD_LEVEL_LOOKUP[level];
-};
+export const getLogLevelSeverity = (level: LogLevel): number => WORD_LEVEL_LOOKUP[level];
 
 // Check if a log at desiredLevel should be logged given the configured level
 // Returns true if desiredLevel is at or above the configured level's severity
-export const shouldLogAtLevel = (configuredLevel: LogLevel, desiredLevel: LogLevel): boolean => {
-  return WORD_LEVEL_LOOKUP[configuredLevel] <= WORD_LEVEL_LOOKUP[desiredLevel];
-};
+export const shouldLogAtLevel = (configuredLevel: LogLevel, desiredLevel: LogLevel): boolean =>
+  WORD_LEVEL_LOOKUP[configuredLevel] <= WORD_LEVEL_LOOKUP[desiredLevel];
 
 export const shouldLog = ({
   loggerName,
