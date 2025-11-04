@@ -67,21 +67,21 @@ setTimeout(ping, reforge.get('ping-delay'));
 
 ## Client API
 
-| property        | example                                  | purpose                                                                                      |
-| --------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `isEnabled`     | `reforge.isEnabled("new-logo")`          | returns a boolean (default `false`) if a feature is enabled based on the current context     |
-| `get`           | `reforge.get('retry-count')`             | returns the value of a flag or config evaluated in the current context                       |
-| `getDuration`   | `reforge.getDuration('http.timeout')`    | returns a duration object `{seconds: number, ms: number}`                                    |
-| `getLogLevel`   | `reforge.getLogLevel("my.app.logger")`   | returns a `LogLevel` enum value for the specified logger name                                |
-| `logger`        | `reforge.logger.info("message")`         | log messages with dynamic log level control (see below for all methods)                      |
-| `loaded`        | `if (reforge.loaded) { ... }`            | a boolean indicating whether reforge content has loaded                                      |
-| `shouldLog`     | `if (reforge.shouldLog(...)) {`          | returns a boolean indicating whether the proposed log level is valid for the current context |
-| `poll`          | `reforge.poll({frequencyInMs})`          | starts polling every `frequencyInMs` ms.                                                     |
-| `stopPolling`   | `reforge.stopPolling()`                  | stops the polling process                                                                    |
-| `context`       | `reforge.context`                        | get the current context (after `init()`).                                                    |
-| `updateContext` | `reforge.updateContext(newContext)`      | update the context and refetch. Pass `false` as a second argument to skip refetching         |
-| `extract`       | `reforge.extract()`                      | returns the current config as a plain object of key, config value pairs                      |
-| `hydrate`       | `reforge.hydrate(configurationObject)`   | sets the current config based on a plain object of key, config value pairs                   |
+| property        | example                                | purpose                                                                                      |
+| --------------- | -------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `isEnabled`     | `reforge.isEnabled("new-logo")`        | returns a boolean (default `false`) if a feature is enabled based on the current context     |
+| `get`           | `reforge.get('retry-count')`           | returns the value of a flag or config evaluated in the current context                       |
+| `getDuration`   | `reforge.getDuration('http.timeout')`  | returns a duration object `{seconds: number, ms: number}`                                    |
+| `getLogLevel`   | `reforge.getLogLevel("my.app.logger")` | returns a `LogLevel` enum value for the specified logger name                                |
+| `logger`        | `reforge.logger.info("message")`       | log messages with dynamic log level control (see below for all methods)                      |
+| `loaded`        | `if (reforge.loaded) { ... }`          | a boolean indicating whether reforge content has loaded                                      |
+| `shouldLog`     | `if (reforge.shouldLog(...)) {`        | returns a boolean indicating whether the proposed log level is valid for the current context |
+| `poll`          | `reforge.poll({frequencyInMs})`        | starts polling every `frequencyInMs` ms.                                                     |
+| `stopPolling`   | `reforge.stopPolling()`                | stops the polling process                                                                    |
+| `context`       | `reforge.context`                      | get the current context (after `init()`).                                                    |
+| `updateContext` | `reforge.updateContext(newContext)`    | update the context and refetch. Pass `false` as a second argument to skip refetching         |
+| `extract`       | `reforge.extract()`                    | returns the current config as a plain object of key, config value pairs                      |
+| `hydrate`       | `reforge.hydrate(configurationObject)` | sets the current config based on a plain object of key, config value pairs                   |
 
 ## `shouldLog()`
 
@@ -93,9 +93,12 @@ setTimeout(ping, reforge.get('ping-delay'));
 | `desiredLevel` | string | INFO                  | No             |
 | `defaultLevel` | string | ERROR                 | No             |
 
-If you've configured a level value for the exact `loggerName` (as `log-level.{loggerName}`), that value will be used for comparison against the `desiredLevel`. If no configured level is found for the exact `loggerName`, then the provided `defaultLevel` will be compared against `desiredLevel`.
+If you've configured a level value for the exact `loggerName` (as `log-level.{loggerName}`), that
+value will be used for comparison against the `desiredLevel`. If no configured level is found for
+the exact `loggerName`, then the provided `defaultLevel` will be compared against `desiredLevel`.
 
-**Note:** `shouldLog` does NOT traverse the logger name hierarchy. It only checks for an exact match of `log-level.{loggerName}`.
+**Note:** `shouldLog` does NOT traverse the logger name hierarchy. It only checks for an exact match
+of `log-level.{loggerName}`.
 
 If `desiredLevel` is greater than or equal to the comparison severity, then `shouldLog` returns
 true. If the `desiredLevel` is less than the comparison severity, then `shouldLog` will return
@@ -113,20 +116,27 @@ if (shouldLog({ loggerName, desiredLevel, defaultLevel })) {
 }
 ```
 
-If no log level value is configured in Reforge for the exact key `"log-level.my.corp.widgets.modal"`, then the `defaultLevel` ("ERROR") will be used and the `console.info` will not happen. If the value is configured for that exact key and is INFO or more verbose, the `console.info` will happen.
+If no log level value is configured in Reforge for the exact key
+`"log-level.my.corp.widgets.modal"`, then the `defaultLevel` ("ERROR") will be used and the
+`console.info` will not happen. If the value is configured for that exact key and is INFO or more
+verbose, the `console.info` will happen.
 
 ## `getLogLevel()`
 
-`getLogLevel` provides a simpler way to get log levels for dynamic logging. It returns a `LogLevel` enum value from a configured key.
+`getLogLevel` provides a simpler way to get log levels for dynamic logging. It returns a `LogLevel`
+enum value from a configured key.
 
 ### Configuration
 
-You can optionally specify a custom logger key during initialization (default is `"log-levels.default"`):
+You can optionally specify a custom logger key during initialization (default is
+`"log-levels.default"`):
 
 ```javascript
 await reforge.init({
   sdkKey: "1234",
-  context: new Context({ /* ... */ }),
+  context: new Context({
+    /* ... */
+  }),
   loggerKey: "my.custom.log.config", // optional, defaults to "log-levels.default"
 });
 ```
@@ -153,11 +163,15 @@ When you call `getLogLevel(loggerName)`, the method:
 2. Returns the appropriate `LogLevel` enum value (TRACE, DEBUG, INFO, WARN, ERROR, or FATAL)
 3. Returns `LogLevel.DEBUG` as the default if no configuration is found
 
-**Note:** The `loggerName` parameter is currently only used for potential telemetry/logging purposes. All loggers share the same configured log level from the logger key. For per-logger log levels, use `shouldLog()` with individual `log-level.{loggerName}` configs.
+**Note:** The `loggerName` parameter is currently only used for potential telemetry/logging
+purposes. All loggers share the same configured log level from the logger key. For per-logger log
+levels, use `shouldLog()` with individual `log-level.{loggerName}` configs.
 
 ## `logger` - Simple Logging Methods
 
-The `reforge.logger` object provides convenient methods for logging at different levels. These methods automatically check the configured log level and only output to the console when appropriate.
+The `reforge.logger` object provides convenient methods for logging at different levels. These
+methods automatically check the configured log level and only output to the console when
+appropriate.
 
 ### Available Methods
 
@@ -167,29 +181,33 @@ import { reforge } from "@reforge-com/javascript";
 // Configure the log level
 await reforge.init({
   sdkKey: "1234",
-  context: new Context({ /* ... */ }),
+  context: new Context({
+    /* ... */
+  }),
   loggerKey: "log-levels.default", // optional
 });
 
 reforge.hydrate({ "log-levels.default": "INFO" });
 
 // Use the logger methods
-reforge.logger.trace("Trace message");   // Will not log (below INFO)
-reforge.logger.debug("Debug message");   // Will not log (below INFO)
-reforge.logger.info("Info message");     // Will log
-reforge.logger.warn("Warning message");  // Will log
-reforge.logger.error("Error message");   // Will log
-reforge.logger.fatal("Fatal message");   // Will log
+reforge.logger.trace("Trace message"); // Will not log (below INFO)
+reforge.logger.debug("Debug message"); // Will not log (below INFO)
+reforge.logger.info("Info message"); // Will log
+reforge.logger.warn("Warning message"); // Will log
+reforge.logger.error("Error message"); // Will log
+reforge.logger.fatal("Fatal message"); // Will log
 ```
 
 ### How it Works
 
 Each logger method:
+
 1. Checks the configured log level from the logger key (default: `"log-levels.default"`)
 2. Compares the message level against the configured level
 3. Only outputs to the console if the level is enabled
 
 **Console Method Mapping:**
+
 - `trace()` and `debug()` → `console.debug()`
 - `info()` → `console.info()`
 - `warn()` → `console.warn()`
@@ -208,10 +226,10 @@ await reforge.init({
 // Set log level to WARN
 reforge.hydrate({ "log-levels.default": "WARN" });
 
-reforge.logger.debug("Debug details");    // Not logged
-reforge.logger.info("Process started");   // Not logged
-reforge.logger.warn("Low disk space");    // Logged to console
-reforge.logger.error("Failed to save");   // Logged to console
+reforge.logger.debug("Debug details"); // Not logged
+reforge.logger.info("Process started"); // Not logged
+reforge.logger.warn("Low disk space"); // Logged to console
+reforge.logger.error("Failed to save"); // Logged to console
 ```
 
 ### LogLevel enum values

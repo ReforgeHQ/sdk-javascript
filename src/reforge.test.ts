@@ -572,7 +572,9 @@ describe("getLogLevel", () => {
 
     // To compare log level severity, you would need to use shouldLog or compare against the enum
     expect(level === LogLevel.TRACE || level === LogLevel.DEBUG).toBe(false);
-    expect(level === LogLevel.INFO || level === LogLevel.WARN || level === LogLevel.ERROR).toBe(true);
+    expect(level === LogLevel.INFO || level === LogLevel.WARN || level === LogLevel.ERROR).toBe(
+      true
+    );
   });
 
   test("all logger names return the same configured level", () => {
