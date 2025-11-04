@@ -716,9 +716,9 @@ describe("getLogLevelSeverity", () => {
     expect(getLogLevelSeverity(LogLevel.TRACE)).toBe(1);
     expect(getLogLevelSeverity(LogLevel.DEBUG)).toBe(2);
     expect(getLogLevelSeverity(LogLevel.INFO)).toBe(3);
-    expect(getLogLevelSeverity(LogLevel.WARN)).toBe(5);
-    expect(getLogLevelSeverity(LogLevel.ERROR)).toBe(6);
-    expect(getLogLevelSeverity(LogLevel.FATAL)).toBe(9);
+    expect(getLogLevelSeverity(LogLevel.WARN)).toBe(4);
+    expect(getLogLevelSeverity(LogLevel.ERROR)).toBe(5);
+    expect(getLogLevelSeverity(LogLevel.FATAL)).toBe(6);
   });
 
   test("can be used to compare log level severity", () => {
