@@ -469,3 +469,28 @@ export class Reforge {
 }
 
 export const reforge = new Reforge();
+
+export function prefetchReforgeConfig({
+  sdkKey,
+  context,
+  endpoints = undefined,
+  timeout = undefined,
+  collectContextMode = "PERIODIC_EXAMPLE",
+  clientNameString = "sdk-javascript",
+  clientVersionString = version,
+}: ReforgeInitParams) {
+  const clientNameAndVersionString = `${clientNameString}-${clientVersionString}`;
+
+  const loader = new Loader({
+    sdkKey,
+    context,
+    endpoints,
+    timeout,
+    collectContextMode,
+    clientVersion: clientNameAndVersionString,
+  });
+
+  (window as any).REFORGE_SDK_PREFETCH_PROMISE = loader.load();
+}
+
+export default prefetchReforgeConfig;

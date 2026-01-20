@@ -1,4 +1,10 @@
-import { reforge, Reforge, ReforgeInitParams, ReforgeBootstrap } from "./src/reforge";
+import {
+  reforge,
+  Reforge,
+  ReforgeInitParams,
+  ReforgeBootstrap,
+  prefetchReforgeConfig,
+} from "./src/reforge";
 import { Config } from "./src/config";
 import Context from "./src/context";
 import { LogLevel, getLogLevelSeverity, shouldLogAtLevel } from "./src/logger";
@@ -15,6 +21,7 @@ export {
   getLogLevelSeverity,
   shouldLogAtLevel,
   version,
+  prefetchReforgeConfig,
 };
 
 export { ReforgeBootstrap };
