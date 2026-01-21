@@ -1,17 +1,23 @@
 /**
  * @jest-environment jsdom
  */
-import { prefetchReforgeConfig, Reforge } from "./reforge";
-import Context from "./context";
+import { prefetchReforgeConfig, Context } from "./prefetch";
+import { Reforge } from "./reforge";
 
 describe("prefetchReforgeConfig", () => {
   const sdkKey = "test-sdk-key";
   const context = new Context({ user: { id: "123" } });
+  let consoleWarnSpy: jest.SpyInstance;
 
   beforeEach(() => {
     // Reset window object
     (window as any).REFORGE_SDK_PREFETCH_PROMISE = undefined;
     jest.clearAllMocks();
+    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => { });
+  });
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore();
   });
 
   it("should set REFORGE_SDK_PREFETCH_PROMISE on window", () => {
@@ -72,5 +78,53 @@ describe("prefetchReforgeConfig", () => {
 
     // Verify window global was cleared (as per loader logic)
     expect((window as any).REFORGE_SDK_PREFETCH_PROMISE).toBeUndefined();
+  });
+
+  it("should not warn when calling get after data is loaded", async () => {
+    // Mock fetch with actual config data
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            evaluations: {
+              "test-flag": {
+                value: { bool: true },
+                configEvaluationMetadata: {
+                  configRowIndex: "0",
+                  conditionalValueIndex: "0",
+                  type: "bool",
+                  id: "123",
+                },
+              },
+            },
+          }),
+      } as Response)
+    );
+
+    // Start prefetch
+    prefetchReforgeConfig({ sdkKey, context });
+
+    // Initialize Reforge and wait for it to load
+    const reforgeInstance = new Reforge();
+    await reforgeInstance.init({ sdkKey, context });
+
+    // Call get after data is loaded - should NOT warn
+    const value = reforgeInstance.get("test-flag");
+
+    expect(value).toBe(true);
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
+  });
+
+  it("should warn when calling get before data is loaded", () => {
+    const reforgeInstance = new Reforge();
+
+    // Call get before init - should warn
+    const value = reforgeInstance.get("some-flag");
+
+    expect(value).toBeUndefined();
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("The client has not finished loading data yet")
+    );
   });
 });

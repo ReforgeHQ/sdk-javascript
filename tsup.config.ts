@@ -1,17 +1,23 @@
 import { defineConfig } from "tsup";
 import { execSync } from "child_process";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const packageJson = require("./package.json");
+
 export default defineConfig({
-  entry: ["index.ts"],
+  entry: ["index.ts", "src/prefetch.ts"],
   format: ["cjs", "esm"], // Build both CommonJS and ESM versions
   dts: true, // Generate declaration files
-  splitting: false,
+  splitting: true, // Enable code splitting for smaller imports
   sourcemap: true,
   clean: true, // Clean output directory before build
-  minify: false,
-  external: ["uuid"], // Don't bundle uuid
+  minify: true,
+  external: [],
   noExternal: [],
   outDir: "dist",
+  define: {
+    __SDK_VERSION__: JSON.stringify(packageJson.version),
+  },
   outExtension: ({ format }) => ({
     js: format === "cjs" ? ".cjs" : ".mjs",
   }),

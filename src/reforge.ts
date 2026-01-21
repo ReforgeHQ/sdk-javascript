@@ -1,6 +1,4 @@
 /* eslint-disable max-classes-per-file */
-import { v4 as uuid } from "uuid";
-
 import { Config, EvaluationPayload, RawConfigWithoutTypes } from "./config";
 import type {
   Duration,
@@ -20,8 +18,19 @@ import {
 } from "./logger";
 import TelemetryUploader from "./telemetryUploader";
 import { LoggerAggregator } from "./loggerAggregator";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { version } = require("../package.json");
+
+/* eslint-disable no-underscore-dangle */
+declare const __SDK_VERSION__: string;
+const version = __SDK_VERSION__;
+/* eslint-enable no-underscore-dangle */
+
+function uuid() {
+  if (typeof crypto !== "undefined") {
+    return crypto.randomUUID();
+  }
+
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
 
 type EvaluationCallback = <K extends keyof TypedFrontEndConfigurationRaw>(
   key: K,
@@ -150,7 +159,7 @@ export class Reforge {
 
   public loader: Loader | undefined;
 
-  public afterEvaluationCallback = (() => {}) as EvaluationCallback;
+  public afterEvaluationCallback = (() => { }) as EvaluationCallback;
 
   private _context: Context = new Context({});
 
@@ -168,7 +177,7 @@ export class Reforge {
     endpoints = undefined,
     apiEndpoint,
     timeout = undefined,
-    afterEvaluationCallback = () => {},
+    afterEvaluationCallback = () => { },
     collectEvaluationSummaries = true,
     collectLoggerNames = false,
     collectContextMode = "PERIODIC_EXAMPLE",
@@ -368,12 +377,12 @@ export class Reforge {
     // We need to calcuate these live and not store in a type to ensure dynamic evaluation
     // in upstream libraries that override the FrontEndConfigurationRaw interface
     K extends keyof FrontEndConfigurationRaw extends never
-      ? string
-      : {
-          [IK in keyof TypedFrontEndConfigurationRaw]: TypedFrontEndConfigurationRaw[IK] extends boolean
-            ? IK
-            : never;
-        }[keyof TypedFrontEndConfigurationRaw],
+    ? string
+    : {
+      [IK in keyof TypedFrontEndConfigurationRaw]: TypedFrontEndConfigurationRaw[IK] extends boolean
+      ? IK
+      : never;
+    }[keyof TypedFrontEndConfigurationRaw],
   >(key: K): boolean {
     return this.get(key) === true;
   }
@@ -409,12 +418,12 @@ export class Reforge {
     // We need to calcuate these live and not store in a type to ensure dynamic evaluation
     // in upstream libraries that override the FrontEndConfigurationRaw interface
     K extends keyof FrontEndConfigurationRaw extends never
-      ? string
-      : {
-          [IK in keyof TypedFrontEndConfigurationRaw]: TypedFrontEndConfigurationRaw[IK] extends Duration
-            ? IK
-            : never;
-        }[keyof TypedFrontEndConfigurationRaw],
+    ? string
+    : {
+      [IK in keyof TypedFrontEndConfigurationRaw]: TypedFrontEndConfigurationRaw[IK] extends Duration
+      ? IK
+      : never;
+    }[keyof TypedFrontEndConfigurationRaw],
   >(key: K): Duration | undefined {
     const value = this.get(key);
 
@@ -470,27 +479,6 @@ export class Reforge {
 
 export const reforge = new Reforge();
 
-export function prefetchReforgeConfig({
-  sdkKey,
-  context,
-  endpoints = undefined,
-  timeout = undefined,
-  collectContextMode = "PERIODIC_EXAMPLE",
-  clientNameString = "sdk-javascript",
-  clientVersionString = version,
-}: ReforgeInitParams) {
-  const clientNameAndVersionString = `${clientNameString}-${clientVersionString}`;
-
-  const loader = new Loader({
-    sdkKey,
-    context,
-    endpoints,
-    timeout,
-    collectContextMode,
-    clientVersion: clientNameAndVersionString,
-  });
-
-  (window as any).REFORGE_SDK_PREFETCH_PROMISE = loader.load();
-}
-
-export default prefetchReforgeConfig;
+// Re-export prefetchReforgeConfig for backwards compatibility
+export { prefetchReforgeConfig } from "./prefetch";
+export type { PrefetchParams } from "./prefetch";

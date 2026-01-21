@@ -8,8 +8,11 @@ import {
 import { Config } from "./src/config";
 import Context from "./src/context";
 import { LogLevel, getLogLevelSeverity, shouldLogAtLevel } from "./src/logger";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { version } = require("./package.json");
+
+/* eslint-disable no-underscore-dangle */
+declare const __SDK_VERSION__: string;
+const version = __SDK_VERSION__;
+/* eslint-enable no-underscore-dangle */
 
 export {
   reforge,
