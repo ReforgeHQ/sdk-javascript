@@ -130,7 +130,8 @@ export default class Loader {
       headers: headers(this.sdkKey, this.clientVersion),
     };
 
-    const prefetchPromise = typeof window !== "undefined" ? (window as any).REFORGE_SDK_PREFETCH_PROMISE : undefined;
+    const prefetchPromise =
+      typeof window !== "undefined" ? (window as any).REFORGE_SDK_PREFETCH_PROMISE : undefined;
 
     if (prefetchPromise && prefetchPromise instanceof Promise) {
       (window as any).REFORGE_SDK_PREFETCH_PROMISE = undefined;
