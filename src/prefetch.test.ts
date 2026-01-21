@@ -13,7 +13,7 @@ describe("prefetchReforgeConfig", () => {
     // Reset window object
     (window as any).REFORGE_SDK_PREFETCH_PROMISE = undefined;
     jest.clearAllMocks();
-    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => { });
+    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
   });
 
   afterEach(() => {

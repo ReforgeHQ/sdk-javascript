@@ -83,7 +83,8 @@ prefetchReforgeConfig({
 });
 ```
 
-This lightweight import (~3KB) is ideal for early loading. When you later call `reforge.init()`, it will automatically use the prefetched promise if available.
+This lightweight import (~3KB) is ideal for early loading. When you later call `reforge.init()`, it
+will automatically use the prefetched promise if available.
 
 ## Client API
 
