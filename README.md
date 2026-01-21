@@ -65,6 +65,26 @@ if (reforge.isEnabled('cool-feature') {
 setTimeout(ping, reforge.get('ping-delay'));
 ```
 
+## Prefetching
+
+To avoid a request waterfall, you can start fetching the configuration early in your app's
+lifecycle, before the React SDK or `reforge.init()` is called.
+
+```javascript
+import { prefetchReforgeConfig, Context } from "@reforge-com/javascript";
+
+prefetchReforgeConfig({
+  sdkKey: "1234",
+  context: new Context({
+    user: {
+      email: "test@example.com",
+    },
+  }),
+});
+```
+
+When you later call `reforge.init()`, it will automatically use the prefetched promise if available.
+
 ## Client API
 
 | property        | example                                | purpose                                                                                      |

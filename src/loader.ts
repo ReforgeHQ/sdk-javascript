@@ -130,6 +130,20 @@ export default class Loader {
       headers: headers(this.sdkKey, this.clientVersion),
     };
 
+    const prefetchPromise =
+      typeof window !== "undefined" ? (window as any).REFORGE_SDK_PREFETCH_PROMISE : undefined;
+
+    if (prefetchPromise && prefetchPromise instanceof Promise) {
+      (window as any).REFORGE_SDK_PREFETCH_PROMISE = undefined;
+      return prefetchPromise.catch(
+        () =>
+          // If the prefetch failed, we should try to load from the endpoints
+          new Promise((resolve, reject) => {
+            this.loadFromEndpoint(0, options, resolve, reject);
+          })
+      );
+    }
+
     const promise = new Promise((resolve, reject) => {
       this.loadFromEndpoint(0, options, resolve, reject);
     });
