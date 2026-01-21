@@ -1,6 +1,4 @@
 /* eslint-disable max-classes-per-file */
-import { v4 as uuid } from "uuid";
-
 import { Config, EvaluationPayload, RawConfigWithoutTypes } from "./config";
 import type {
   Duration,
@@ -20,8 +18,19 @@ import {
 } from "./logger";
 import TelemetryUploader from "./telemetryUploader";
 import { LoggerAggregator } from "./loggerAggregator";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { version } = require("../package.json");
+
+/* eslint-disable no-underscore-dangle */
+declare const __SDK_VERSION__: string;
+const version = __SDK_VERSION__;
+/* eslint-enable no-underscore-dangle */
+
+function uuid() {
+  if (typeof crypto !== "undefined") {
+    return crypto.randomUUID();
+  }
+
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
 
 type EvaluationCallback = <K extends keyof TypedFrontEndConfigurationRaw>(
   key: K,
@@ -470,27 +479,6 @@ export class Reforge {
 
 export const reforge = new Reforge();
 
-export function prefetchReforgeConfig({
-  sdkKey,
-  context,
-  endpoints = undefined,
-  timeout = undefined,
-  collectContextMode = "PERIODIC_EXAMPLE",
-  clientNameString = "sdk-javascript",
-  clientVersionString = version,
-}: ReforgeInitParams) {
-  const clientNameAndVersionString = `${clientNameString}-${clientVersionString}`;
-
-  const loader = new Loader({
-    sdkKey,
-    context,
-    endpoints,
-    timeout,
-    collectContextMode,
-    clientVersion: clientNameAndVersionString,
-  });
-
-  (window as any).REFORGE_SDK_PREFETCH_PROMISE = loader.load();
-}
-
-export default prefetchReforgeConfig;
+// Re-export prefetchReforgeConfig for backwards compatibility
+export { prefetchReforgeConfig } from "./prefetch";
+export type { PrefetchParams } from "./prefetch";
