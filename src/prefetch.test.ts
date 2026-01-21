@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { prefetchReforgeConfig, Reforge } from "./reforge";
 import Context from "./context";
 
